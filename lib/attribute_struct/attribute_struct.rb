@@ -12,7 +12,7 @@ class AttributeStruct
 
     def load_the_camels
       unless(@camels_loaded)
-        require 'attrubute_struct/monkey_camels'
+        require 'attribute_struct/monkey_camels'
         @camels_loaded = true
       end
     end
