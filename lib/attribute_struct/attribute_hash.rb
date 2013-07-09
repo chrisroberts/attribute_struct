@@ -3,7 +3,7 @@ require 'hashie/extensions/indifferent_access'
 
 class AttributeStruct
   class AttributeHash < ::Hash
-    include Hashie::Extensions::DeepMerge
-    include Hashie::Extensions::IndifferentAccess
+    include ::Hashie::Extensions::DeepMerge
+    include ::Hashie::Extensions::IndifferentAccess
   end
 end

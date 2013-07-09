@@ -1,4 +1,4 @@
-class AttributeStruct
+class AttributeStruct < BasicObject
   
   class << self
     
@@ -25,7 +25,7 @@ class AttributeStruct
         else
           require 'attribute_struct/attribute_hash'
         end
-        @hash_loaded
+        @hash_loaded = true
       end
     end
 
@@ -34,18 +34,18 @@ class AttributeStruct
   attr_reader :_camel_keys
   
   def initialize(*args, &block)
-    self.class.load_the_hash
-    @_camel_keys = self.class.camel_keys
+    _klass.load_the_hash
+    @_camel_keys = _klass.camel_keys
     @table = __hashish.new
     unless(args.empty?)
-      if(args.size == 1 && args.first.is_a?(Hash))
+      if(args.size == 1 && args.first.is_a?(::Hash))
         _load(args.first)
       end
     end
   end
 
   def _camel_keys=(val)
-    self.class.load_the_camels if val
+    _klass.load_the_camels if val
     @_camel_keys = !!val
   end
   
@@ -67,7 +67,7 @@ class AttributeStruct
       sym = s
     end
     sym = _process_key(sym)
-    @table[sym] ||= AttributeStruct.new
+    @table[sym] ||= _klass.new
     if(!args.empty? || block)
       if(args.empty? && block)
         base = @table[sym]
@@ -79,13 +79,13 @@ class AttributeStruct
         @table[sym] = base
       elsif(!args.empty? && block)
         base = @table[sym]
-        base = self.class.new unless base.is_a?(self.class)
+        base = _klass.new unless base.is_a?(_klass)
         @table[sym] = base
         leaf = base
         args.each do |arg|
           leaf = base[arg]
-          unless(leaf.is_a?(self.class))
-            leaf = self.class.new
+          unless(leaf.is_a?(_klass))
+            leaf = _klass.new
             base._set(arg, leaf)
             base = leaf
           end
@@ -117,7 +117,7 @@ class AttributeStruct
   def _dump
     __hashish[
       *(@table.map{|key, value|
-          [key, value.is_a?(self.class) ? value._dump : value]
+          [key, value.is_a?(_klass) ? value._dump : value]
         }.flatten(1))
     ]
   end
@@ -125,7 +125,7 @@ class AttributeStruct
   def _load(hashish)
     @table.clear
     hashish.each do |key, value|
-      if(value.is_a?(Hash))
+      if(value.is_a?(::Hash))
         self._set(key)._load(value)
       else
         self._set(key, value)
@@ -137,12 +137,12 @@ class AttributeStruct
   def _merge(target)
     source = deep_copy
     dest = target.deep_copy
-    if(defined?(Mash))
-      result = Chef::Mixin::DeepMerge.merge(source, dest)
+    if(defined?(::Mash))
+      result = ::Chef::Mixin::DeepMerge.merge(source, dest)
     else
       result = source.deep_merge(dest)
     end
-    AttributeStruct.new(result)
+    _klass.new(result)
   end
 
   def _merge!(target)
@@ -152,25 +152,25 @@ class AttributeStruct
   end
   
   def __hashish
-    defined?(Mash) ? Mash : AttributeHash
+    defined?(::Mash) ? ::Mash : ::AttributeStruct::AttributeHash
   end
   
   def do_dup(v)
     begin
       v.dup
     rescue
-      v.is_a?(Symbol) ? v.to_s : v
+      v.is_a?(::Symbol) ? v.to_s : v
     end
   end
 
   def deep_copy(thing=nil)
     thing ||= _dump
-    if(thing.is_a?(Enumerable))
-      val = thing.map{|v| v.is_a?(Enumerable) ? deep_copy(v) : do_dup(v) }
+    if(thing.is_a?(::Enumerable))
+      val = thing.map{|v| v.is_a?(::Enumerable) ? deep_copy(v) : do_dup(v) }
     else
       val = do_dup(thing)
     end
-    if(thing.is_a?(Hash))
+    if(thing.is_a?(::Hash))
       val = __hashish[*val.flatten(1)]
     end
     val
@@ -185,9 +185,18 @@ class AttributeStruct
     else
       if(_camel_keys)
         # Convert so Hash doesn't make a new one and lose the meta
-        key = CamelString.new(key) unless key.is_a?(CamelString)
+        key = ::CamelString.new(key) unless key.is_a?(::CamelString)
       end
       key
     end
+  end
+
+  def _klass
+    ::AttributeStruct
+  end
+  alias_method :class, :_klass
+
+  def is_a?(klass)
+    klass.ancestors.include?(_klass)
   end
 end
