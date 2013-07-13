@@ -4,6 +4,10 @@ This is a helper library that essentially builds hashes. It
 wraps hash building with a nice DSL to make it slightly cleaner,
 more robust, and provide extra features.
 
+## Build Status
+
+* [![Build Status](https://api.travis-ci.org/chrisroberts/attribute_struct.png)](https://travis-ci.org/chrisroberts/attribute_struct)
+
 ### Usage
 
 ```ruby
