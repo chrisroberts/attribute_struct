@@ -284,6 +284,7 @@ class AttributeStruct < BasicObject
   def _klass_new
     n = _klass.new
     n._camel_keys_set(_camel_keys_action)
+    n._parent(self)
     n
   end
 
@@ -296,6 +297,19 @@ class AttributeStruct < BasicObject
   # Returns value set via #_camel_keys_set
   def _camel_keys_action
     @_camel_keys_set
+  end
+
+  def _parent(obj=nil)
+    @_parent = obj if obj
+    @_parent
+  end
+
+  def _root
+    r = self
+    until(r._parent.nil?)
+      r = r._parent
+    end
+    r
   end
 
   # args:: Objects
