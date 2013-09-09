@@ -1,5 +1,5 @@
 class AttributeStruct < BasicObject
-  
+
   class << self
 
     # Global flag for camel cased keys
@@ -39,7 +39,7 @@ class AttributeStruct < BasicObject
 
   # Flag for camel cased keys
   attr_reader :_camel_keys
-  
+
   def initialize(*args, &block)
     _klass.load_the_hash
     @_camel_keys = _klass.camel_keys
@@ -182,7 +182,14 @@ class AttributeStruct < BasicObject
   # Clears current instance data and replaces with provided hash
   def _load(hashish)
     @table.clear
+    if(_root._camel_keys_action == :auto_discovery)
+      starts = hashish.keys.map{|k|k[0,1]}
+      unless(starts.detect{|k| k =~ /[A-Z]/})
+        _camel_keys_set(:auto_disable)
+      end
+    end
     hashish.each do |key, value|
+      key = key.dup
       if(value.is_a?(::Enumerable))
         flat = value.map do |v|
           v.is_a?(::Hash) ? _klass.new(v) : v
@@ -203,7 +210,7 @@ class AttributeStruct < BasicObject
   def _merge(target)
     source = _deep_copy
     dest = target._deep_copy
-    if(defined?(::Mash))
+    if(defined?(::Chef))
       result = ::Chef::Mixin::DeepMerge.merge(source, dest)
     else
       result = source.deep_merge(dest)
@@ -222,7 +229,7 @@ class AttributeStruct < BasicObject
 
   # Returns a new Hash type instance based on what is available
   def __hashish
-    defined?(::Mash) ? ::Mash : ::AttributeStruct::AttributeHash
+    defined?(::Chef) ? ::Mash : ::AttributeStruct::AttributeHash
   end
 
   # Returns dup of value. Converts Symbol objects to strings
@@ -283,7 +290,9 @@ class AttributeStruct < BasicObject
   # Helper to return new instance of current instance type
   def _klass_new
     n = _klass.new
-    n._camel_keys_set(_camel_keys_action)
+    unless(_camel_keys_action == :auto_discovery)
+      n._camel_keys_set(_camel_keys_action)
+    end
     n._parent(self)
     n
   end
@@ -331,5 +340,5 @@ class AttributeStruct < BasicObject
       end
     end
   end
-  
+
 end
