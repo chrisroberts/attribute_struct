@@ -40,4 +40,23 @@ describe AttributeStruct do
       dump['ValueTwo']['Nesting'].must_equal true
     end
   end
+  describe 'Camel enabled imports' do
+    before do
+      @struct = AttributeStruct.new
+      @struct._camel_keys_set = :auto_discovery
+      @hash = {
+        'Fubar' => {
+          'FooBar' => true,
+          'FeeBar' => {
+            'FauxBar' => 'done'
+          }
+        }
+      }
+    end
+
+    it 'should allow snake case access after import' do
+      @struct._load(@hash)
+      @struct.fubar.fee_bar.faux_bar.must_equal 'done'
+    end
+  end
 end
