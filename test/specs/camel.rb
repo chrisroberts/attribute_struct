@@ -43,20 +43,38 @@ describe AttributeStruct do
   describe 'Camel enabled imports' do
     before do
       @struct = AttributeStruct.new
-      @struct._camel_keys_set = :auto_discovery
-      @hash = {
-        'Fubar' => {
-          'FooBar' => true,
-          'FeeBar' => {
-            'FauxBar' => 'done'
+      @struct._camel_keys = true
+      @struct._camel_keys_set(:auto_discovery)
+      @struct._load(
+        {
+          'Fubar' => {
+            'FooBar' => true,
+            'FeeBar' => {
+              'FauxBar' => 'done'
+            },
+            'FooDar' => {
+              'snake_case' => {
+                'still_snake' => {
+                  'NowCamel' => {
+                    'CamelCamel' => 'yep, a camel'
+                  }
+                }
+              }
+            }
           }
         }
-      }
+      )
+      @struct._camel_keys_set(nil)
     end
 
-    it 'should allow snake case access after import' do
-      @struct._load(@hash)
-      @struct.fubar.fee_bar.faux_bar.must_equal 'done'
+    it 'should properly export keys after discovery' do
+      @struct.fubar.new_bar.halt 'new_value'
+      @struct.fubar.foo_dar.snake_case.new_snake 'snake!'
+      @struct.fubar.foo_dar.snake_case.still_snake.now_camel.new_camel 'a camel!'
+      hash = @struct._dump
+      hash['Fubar']['NewBar']['Halt'].must_equal 'new_value'
+      hash['Fubar']['FooDar']['snake_case']['new_snake'].must_equal 'snake!'
+      hash['Fubar']['FooDar']['snake_case']['still_snake']['NowCamel']['NewCamel'].must_equal 'a camel!'
     end
   end
 end
