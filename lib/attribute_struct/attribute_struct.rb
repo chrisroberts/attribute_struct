@@ -186,6 +186,8 @@ class AttributeStruct < BasicObject
       starts = hashish.keys.map{|k|k[0,1]}
       unless(starts.detect{|k| k =~ /[A-Z]/})
         _camel_keys_set(:auto_disable)
+      else
+        _camel_keys_set(:auto_enable) unless _parent.nil?
       end
     end
     hashish.each do |key, value|
@@ -293,6 +295,7 @@ class AttributeStruct < BasicObject
     unless(_camel_keys_action == :auto_discovery)
       n._camel_keys_set(_camel_keys_action)
     end
+    n._camel_keys = _camel_keys
     n._parent(self)
     n
   end
