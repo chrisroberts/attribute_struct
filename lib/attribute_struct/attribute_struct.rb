@@ -28,11 +28,17 @@ class AttributeStruct < BasicObject
         if(defined?(Chef) || force_chef)
           require 'chef/mash'
           require 'chef/mixin/deep_merge'
+          @hash_loaded = :chef
         else
           require 'attribute_struct/attribute_hash'
+          @hash_loaded = :attribute_hash
         end
-        @hash_loaded = true
       end
+    end
+
+    def hashish
+      load_the_hash
+      @hash_loaded == :chef ? ::Mash : ::AttributeStruct::AttributeHash
     end
 
   end
