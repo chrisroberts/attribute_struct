@@ -4,5 +4,5 @@ class AttributeStruct
   class Version < ::Gem::Version
   end
 
-  VERSION = Version.new('0.1.8')
+  VERSION = Version.new('0.1.9')
 end
