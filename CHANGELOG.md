@@ -1,3 +1,7 @@
+## v0.1.8
+* Basic (optional) auto camel detection on import
+* Add hash helper methods out to class
+
 ## v0.1.6
 * Add helpers for walking up the tree
 * Update hashie dependency restriction
