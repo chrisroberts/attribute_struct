@@ -44,11 +44,12 @@ class AttributeStruct < BasicObject
   end
 
   # Flag for camel cased keys
-  attr_reader :_camel_keys
+  attr_reader :_camel_keys, :_arg_state
 
   def initialize(*args, &block)
     _klass.load_the_hash
     @_camel_keys = _klass.camel_keys
+    @arg_state = self.class.hashish
     @table = __hashish.new
     unless(args.empty?)
       if(args.size == 1 && args.first.is_a?(::Hash))
@@ -57,6 +58,25 @@ class AttributeStruct < BasicObject
     end
     if(block)
       self.instance_exec(&block)
+    end
+  end
+
+  # args:: Argument hash
+  # Set Hash into argument state
+  def _set_state(args={})
+    _arg_state.merge!(args)
+  end
+
+  # key:: key for arg state lookup
+  # traverse:: search towards root for matching key
+  # Return value of key if found
+  def _state(key, traverse=true)
+    if(_arg_state.has_key?(key))
+      _arg_state[key]
+    else
+      if(traverse && _parent)
+        _parent._state(key)
+      end
     end
   end
 
