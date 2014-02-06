@@ -61,6 +61,11 @@ class AttributeStruct < BasicObject
     end
   end
 
+  # Helper method. Execute given block within instance
+  def _build(&block)
+    self.instance_exec(&block)
+  end
+
   # args:: Argument hash
   # Set Hash into argument state
   def _set_state(args={})
