@@ -41,6 +41,12 @@ class AttributeStruct < BasicObject
       @hash_loaded == :chef ? ::Mash : ::AttributeStruct::AttributeHash
     end
 
+    # Create AttributeStruct instance and dump the resulting hash
+    def build(&block)
+      raise ArgumentError.new 'Block required for build!' unless block
+      new(&block)._dump
+    end
+
   end
 
   # Flag for camel cased keys
