@@ -55,7 +55,7 @@ class AttributeStruct < BasicObject
   def initialize(*args, &block)
     _klass.load_the_hash
     @_camel_keys = _klass.camel_keys
-    @arg_state = self.class.hashish
+    @_arg_state = self.class.hashish.new
     @table = __hashish.new
     unless(args.empty?)
       if(args.size == 1 && args.first.is_a?(::Hash))
@@ -82,7 +82,7 @@ class AttributeStruct < BasicObject
   # traverse:: search towards root for matching key
   # Return value of key if found
   def _state(key, traverse=true)
-    if(_arg_state.has_key?(key))
+    if(_arg_state.keys.include?(key))
       _arg_state[key]
     else
       if(traverse && _parent)
@@ -123,34 +123,58 @@ class AttributeStruct < BasicObject
       sym = s
     end
     sym = _process_key(sym)
-    @table[sym] ||= _klass_new
     if(!args.empty? || block)
       if(args.empty? && block)
-        base = @table[sym]
+        if(_state(:value_collapse))
+          orig = @table.fetch(sym, :__unset__)
+        end
+        base = _klass_new
         if(block.arity == 0)
           base.instance_exec(&block)
         else
           base.instance_exec(base, &block)
         end
-        @table[sym] = base
+        if(orig.is_a?(::NilClass))
+          @table[sym] = base
+        else
+          if(orig == :__unset__)
+            @table[sym] = base
+          else
+            orig = [orig] unless orig.is_a?(::Array)
+            orig << base
+            @table[sym] = orig
+          end
+        end
       elsif(!args.empty? && block)
         base = @table[sym]
         base = _klass_new unless base.is_a?(_klass)
-        @table[sym] = base
         leaf = base
+        key = sym
         args.each do |arg|
           leaf = base[arg]
+          key = arg
           unless(leaf.is_a?(_klass))
             leaf = _klass_new
             base._set(arg, leaf)
             base = leaf
           end
         end
+        if(!leaf.nil? && _state(:value_collapse))
+          orig = leaf
+          leaf = orig.parent._klass_new
+        end
         if(block.arity == 0)
           leaf.instance_exec(&block)
         else
           leaf.instance_exec(leaf, &block)
         end
+        if(orig)
+          orig = [orig] unless orig.is_a?(::Array)
+          orig << leaf
+        else
+          orig = leaf
+        end
+        @table[sym] = orig
       else
         if(args.size > 1)
           @table[sym] = _klass_new unless @table[sym].is_a?(_klass)
@@ -162,10 +186,17 @@ class AttributeStruct < BasicObject
           end
           return endpoint # custom break out
         else
-          @table[sym] = args.first
+          if(_state(:value_collapse) && !(leaf = @table[sym]).nil?)
+            leaf = [leaf] unless leaf.is_a?(::Array)
+            leaf << args.first
+            @table[sym] = leaf
+          else
+            @table[sym] = args.first
+          end
         end
       end
     end
+    @table[sym] = _klass_new if @table[sym].nil? && !@table[sym].is_a?(_klass)
     @table[sym]
   end
 
