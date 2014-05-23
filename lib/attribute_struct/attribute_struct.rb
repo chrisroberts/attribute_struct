@@ -2,13 +2,15 @@ class AttributeStruct < BasicObject
 
   class << self
 
-    # Global flag for camel cased keys
+    # @return [Truthy, Falsey] global flag for camel keys
     attr_reader :camel_keys
-    # Force tooling from Chef
+    # @return [Truthy, Falsey] force chef tooling (Mash)
     attr_accessor :force_chef
 
-    # val:: bool
     # Automatically converts keys to camel case
+    #
+    # @param val [TrueClass, FalseClass]
+    # @return [TrueClass, FalseClass]
     def camel_keys=(val)
       load_the_camels if val
       @camel_keys = !!val
@@ -22,7 +24,7 @@ class AttributeStruct < BasicObject
       end
     end
 
-    # Determines what hash library to load based on availability
+    # Determine what hash library to load based on availability
     def load_the_hash
       unless(@hash_loaded)
         if(defined?(Chef) || force_chef)
@@ -36,6 +38,7 @@ class AttributeStruct < BasicObject
       end
     end
 
+    # @return [AttributeStruct::AttributeHash, Mash]
     def hashish
       load_the_hash
       @hash_loaded == :chef ? ::Mash : ::AttributeStruct::AttributeHash
@@ -49,10 +52,16 @@ class AttributeStruct < BasicObject
 
   end
 
-  # Flag for camel cased keys
-  attr_reader :_camel_keys, :_arg_state
+  # @return [Truthy, Falsey] current camelizing setting
+  attr_reader :_camel_keys
+  # @return [AtributeStruct::AttributeHash, Mash] holding space for state
+  attr_reader :_arg_state
 
-  def initialize(*args, &block)
+  # Create new instance
+  #
+  # @param init_hash [Hash] hash to initialize struct
+  # @yield block to execute within struct context
+  def initialize(init_hash, &block)
     _klass.load_the_hash
     @_camel_keys = _klass.camel_keys
     @_arg_state = self.class.hashish.new
@@ -67,20 +76,27 @@ class AttributeStruct < BasicObject
     end
   end
 
-  # Helper method. Execute given block within instance
+  # Execute block within current context
+  #
+  # @yield block to execute
+  # @return [Object]
   def _build(&block)
     self.instance_exec(&block)
   end
 
-  # args:: Argument hash
-  # Set Hash into argument state
+  # Set state into current context
+  #
+  # @param args [Hashish] hashish type holding data for context
+  # @return [Hashish]
   def _set_state(args={})
     _arg_state.merge!(args)
   end
 
-  # key:: key for arg state lookup
-  # traverse:: search towards root for matching key
-  # Return value of key if found
+  # Value of requested state
+  #
+  # @param key [Symbol, String]
+  # @param traverse [TrueClass, FalseClass] traverse towards root for matching key
+  # @return [Object, NilClass]
   def _state(key, traverse=true)
     if(_arg_state.keys.include?(key))
       _arg_state[key]
@@ -91,23 +107,30 @@ class AttributeStruct < BasicObject
     end
   end
 
-  # val:: bool
-  # Turn camel cased keys on/off
+  # Enable/disable camel keys
+  #
+  # @param val [TrueClass, FalseClass]
+  # @return [TrueClass, FalseClass]
   def _camel_keys=(val)
     _klass.load_the_camels if val
     @_camel_keys = !!val
   end
 
-  # key:: Object
-  # Access data directly
+  # Direct data access
+  #
+  # @param key [String, Symbol]
+  # @return [Object]
   def [](key)
     _data[_process_key(key)]
   end
 
-  # key:: Object
-  # val:: Object
-  # Directly set val into struct. Useful when key is not valid syntax
-  # for a ruby method
+  # Directly set value into struct. Useful when the key
+  # is not valid ruby syntax for a method
+  #
+  # @param key [String, Symbol]
+  # @param val [Object]
+  # @yield block to execute within context
+  # @return [Object]
   def _set(key, val=nil, &block)
     if(val)
       self.method_missing(key, val, &block)
@@ -115,8 +138,15 @@ class AttributeStruct < BasicObject
       self.method_missing(key, &block)
     end
   end
+  alias_method :set!, :_set
 
-  # Dragons and unicorns all over in here
+  # Provides struct DSL behavior
+  #
+  # @param sym [Symbol, String] method name
+  # @param args [Object] argument list
+  # @yield provided block
+  # @return [Object] existing value or newly set value
+  # @note Dragons and unicorns all over in here
   def method_missing(sym, *args, &block)
     if((s = sym.to_s).end_with?('='))
       s.slice!(-1, s.length)
@@ -200,35 +230,40 @@ class AttributeStruct < BasicObject
     @table[sym]
   end
 
-  # Returns if this struct is considered nil (empty data)
+  # @return [TrueClass, FalseClass] struct is nil (empty data)
   def nil?
     _data.empty?
   end
 
-  # klass:: Class
-  # Returns if this struct is a klass
+  # Determine if self is a class
+  #
+  # @param klass [Class]
+  # @return [TrueClass, FalseClass]
   def is_a?(klass)
     klass.ancestors.include?(_klass)
   end
   alias_method :kind_of?, :is_a?
 
-  # Returns current keys within struct
+  # @return [Array<String,Symbol>] keys within struct
   def _keys
     _data.keys
   end
 
-  # Returns underlying data hash
+  # @return [AttributeStruct::AttributeHash, Mash] underlying struct data
   def _data
     @table
   end
 
-  # key:: Object
-  # Delete entry in struct with key
+  # Delete entry from struct
+  #
+  # @param key [String, Symbol]
+  # @return [Object] value of entry
   def _delete(key)
     _data.delete(_process_key(key))
   end
+  alias_method :delete!, :_delete
 
-  # Dumps the current instance to a Hash
+  # @return [AttributeStruct::AttributeHash, Mash] dump struct to hashish
   def _dump
     processed = @table.map do |key, value|
       if(value.is_a?(::Enumerable))
@@ -245,9 +280,12 @@ class AttributeStruct < BasicObject
     end
     __hashish[*processed.flatten(1)]
   end
+  alias_method :dump!, :_dump
 
-  # hashish:: Hash type object
-  # Clears current instance data and replaces with provided hash
+  # Clear current struct data and replace
+  #
+  # @param hashish [Hash] hashish type instance
+  # @return [self]
   def _load(hashish)
     @table.clear
     if(_root._camel_keys_action == :auto_discovery)
@@ -275,11 +313,13 @@ class AttributeStruct < BasicObject
     self
   end
 
-  # target:: AttributeStruct
-  # Performs a deep merge and returns the resulting AttributeStruct
-  def _merge(target)
+  # Perform deep merge
+  #
+  # @param overlay [AttributeStruct]
+  # @return [AttributeStruct] newly merged instance
+  def _merge(overlay)
     source = _deep_copy
-    dest = target._deep_copy
+    dest = overlay._deep_copy
     if(defined?(::Chef))
       result = ::Chef::Mixin::DeepMerge.merge(source, dest)
     else
@@ -288,21 +328,26 @@ class AttributeStruct < BasicObject
     _klass.new(result)
   end
 
-  # target:: AttributeStruct
-  # Performs a deep merge and updates the current instance with the
-  # resulting value
-  def _merge!(target)
-    result = _merge(target)._dump
+  # Perform deep merge in place
+  #
+  # @param overlay [AttributeStruct]
+  # @return [self]
+  def _merge!(overlay)
+    result = _merge(overlay)._dump
     _load(result)
     self
   end
 
-  # Returns a new Hash type instance based on what is available
+  # @return [Class] hashish type available
   def __hashish
     defined?(::Chef) ? ::Mash : ::AttributeStruct::AttributeHash
   end
 
-  # Returns dup of value. Converts Symbol objects to strings
+  # Provide dup of instance
+  #
+  # @param v [Object]
+  # @return [Object] duped instance
+  # @note if Symbol provided, String is returned
   def _do_dup(v)
     begin
       v.dup
@@ -311,8 +356,10 @@ class AttributeStruct < BasicObject
     end
   end
 
-  # thing:: Object
-  # Returns a proper deep copy
+  # Create a "deep" copy
+  #
+  # @param thing [Object] struct to copy. defaults to self
+  # @return [Object] new instance
   def _deep_copy(thing=nil)
     thing ||= _dump
     if(thing.is_a?(::Enumerable))
@@ -326,8 +373,11 @@ class AttributeStruct < BasicObject
     val
   end
 
-  # key:: String or Symbol
-  # Processes the key and returns value based on current settings
+  # Provide expected key format based on context
+  #
+  # @param key [String, Symbol]
+  # @param args [Object] argument list (:force will force processing)
+  # @return [String, Symbol]
   def _process_key(key, *args)
     key = key.to_s
     if(_camel_keys && _camel_keys_action)
@@ -350,14 +400,16 @@ class AttributeStruct < BasicObject
       key
     end
   end
+  alias_method :process_key!, :_process_key
 
-  # Helper to return class of current instance
+  # @return [Class] this class
   def _klass
     ::AttributeStruct
   end
   alias_method :class, :_klass
 
-  # Helper to return new instance of current instance type
+  # @return [AttributeStruct] new struct instance
+  # @note will set self as parent and propogate camelizing status
   def _klass_new
     n = _klass.new
     unless(_camel_keys_action == :auto_discovery)
@@ -368,22 +420,26 @@ class AttributeStruct < BasicObject
     n
   end
 
-  # v:: Symbol (:auto_disable, :auto_enable)
-  # Sets custom rule for processed keys
+  # Set custom rule for processed keys at this context level
+  #
+  # @param v [Symbol] :auto_disable or :auto_enable
+  # @return [Symbol]
   def _camel_keys_set(v)
     @_camel_keys_set = v
   end
 
-  # Returns value set via #_camel_keys_set
+  # @return [Symbol, NilClass] :auto_disable or :auto_enable
   def _camel_keys_action
     @_camel_keys_set
   end
 
+  # @return [AttributeStruct, NilClass] parent of this struct
   def _parent(obj=nil)
     @_parent = obj if obj
     @_parent
   end
 
+  # @return [AttributeStruct, NilClass] root of the struct or nil if self is root
   def _root
     r = self
     until(r._parent.nil?)
@@ -392,10 +448,10 @@ class AttributeStruct < BasicObject
     r
   end
 
-  # args:: Objects
-  # Helper to create Arrays with nested AttributeStructs. Proc
-  # instances are automatically executed into new AttributeStruct
-  # instances
+  # Create an Array and evaluate discovered AttributeStructs
+  #
+  # @param args [Object] array contents
+  # @return [Array]
   def _array(*args)
     args.map do |maybe_block|
       if(maybe_block.is_a?(::Proc))
@@ -411,5 +467,6 @@ class AttributeStruct < BasicObject
       end
     end
   end
+  alias_method :array!, :_array
 
 end
