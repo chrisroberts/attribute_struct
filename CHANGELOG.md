@@ -1,3 +1,9 @@
+## v0.2.0
+* Add support for value setting into given context level
+* Add #build helper method
+* Introduce `:value_collapse` option for multi set combination instead of replacement
+* Provide bang suffix aliases
+
 ## v0.1.8
 * Basic (optional) auto camel detection on import
 * Add hash helper methods out to class
