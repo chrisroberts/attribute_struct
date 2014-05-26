@@ -61,15 +61,13 @@ class AttributeStruct < BasicObject
   #
   # @param init_hash [Hash] hash to initialize struct
   # @yield block to execute within struct context
-  def initialize(init_hash, &block)
+  def initialize(init_hash=nil, &block)
     _klass.load_the_hash
     @_camel_keys = _klass.camel_keys
     @_arg_state = self.class.hashish.new
     @table = __hashish.new
-    unless(args.empty?)
-      if(args.size == 1 && args.first.is_a?(::Hash))
-        _load(args.first)
-      end
+    if(init_hash)
+      _load(init_hash)
     end
     if(block)
       self.instance_exec(&block)
