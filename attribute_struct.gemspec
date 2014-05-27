@@ -5,6 +5,7 @@ Gem::Specification.new do |s|
   s.version = AttributeStruct::VERSION.version
   s.summary = 'Attribute structures'
   s.author = 'Chris Roberts'
+  s.license = 'Apache 2.0'
   s.email = 'chrisroberts.code@gmail.com'
   s.homepage = 'http://github.com/chrisroberts/attribute_struct'
   s.description = 'Attribute structures'
