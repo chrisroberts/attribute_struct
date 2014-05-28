@@ -1,3 +1,5 @@
+require 'attribute_struct/irb_compat'
+
 class AttributeStruct < BasicObject
 
   class << self
@@ -50,6 +52,15 @@ class AttributeStruct < BasicObject
       new(&block)._dump
     end
 
+    # Enable IRB compatibility mode
+    #
+    # @return [TrueClass]
+    # @note this will add methods required for working within IRB
+    def irb_compat!
+      self.send(:include, IrbCompat)
+      true
+    end
+
   end
 
   # @return [Truthy, Falsey] current camelizing setting
@@ -64,7 +75,7 @@ class AttributeStruct < BasicObject
   def initialize(init_hash=nil, &block)
     _klass.load_the_hash
     @_camel_keys = _klass.camel_keys
-    @_arg_state = self.class.hashish.new
+    @_arg_state = __hashish.new
     @table = __hashish.new
     if(init_hash)
       _load(init_hash)
@@ -153,10 +164,15 @@ class AttributeStruct < BasicObject
     sym = _process_key(sym)
     if(!args.empty? || block)
       if(args.empty? && block)
-        if(_state(:value_collapse))
-          orig = @table.fetch(sym, :__unset__)
+        base = @table.fetch(sym, :__unset__)
+        if(_state(:value_collapse) && !base.is_a?(self.class!))
+          orig = base
+          base = _klass_new
+        else
+          unless(base.is_a?(self.class!))
+            base = _klass_new
+          end
         end
-        base = _klass_new
         if(block.arity == 0)
           base.instance_exec(&block)
         else
@@ -175,7 +191,6 @@ class AttributeStruct < BasicObject
         end
       elsif(!args.empty? && block)
         base = @table[sym]
-        base = _klass_new unless base.is_a?(_klass)
         leaf = base
         key = sym
         args.each do |arg|
@@ -238,7 +253,7 @@ class AttributeStruct < BasicObject
   # @param klass [Class]
   # @return [TrueClass, FalseClass]
   def is_a?(klass)
-    klass.ancestors.include?(_klass)
+    (_klass.ancestors + [::AttributeStruct]).include?(klass)
   end
   alias_method :kind_of?, :is_a?
 
@@ -404,7 +419,8 @@ class AttributeStruct < BasicObject
   def _klass
     ::AttributeStruct
   end
-  alias_method :class, :_klass
+  alias_method :klass!, :_klass
+  alias_method :class!, :_klass
 
   # @return [AttributeStruct] new struct instance
   # @note will set self as parent and propogate camelizing status
@@ -466,5 +482,13 @@ class AttributeStruct < BasicObject
     end
   end
   alias_method :array!, :_array
+
+  # Instance responds to method name
+  #
+  # @param name [Symbol, String]
+  # @return [TrueClass, FalseClass]
+  def respond_to?(name)
+    _klass.instance_methods.map(&:to_sym).include?(name.to_sym)
+  end
 
 end
