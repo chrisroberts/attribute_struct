@@ -113,6 +113,15 @@ can simply dump it:</p>
    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>client</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>general</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>enabled</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='kw'>false</span><span class='rbrace'>}</span><span class='rbrace'>}</span><span class='rbrace'>}</span><span class='rbrace'>}</span>
 </code></pre>
 
+<h3>IRB</h3>
+
+<p>IRB expects some things to be around like <code>#inspect</code> and <code>#to_s</code>. Before
+using <code>AttributeStruct</code> in IRB, enable compat mode:</p>
+
+<pre class="code ruby"><code class="ruby">&gt; require 'attribute_struct'
+&gt; AttributeStruct.irb_compat!
+</code></pre>
+
 <h2>Information</h2>
 
 <ul>
@@ -121,7 +130,7 @@ can simply dump it:</p>
 </div></div>
 
     <div id="footer">
-  Generated on Tue May 27 09:47:25 2014 by
+  Generated on Wed May 28 08:29:09 2014 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.8.7.4 (ruby-1.9.3).
 </div>
