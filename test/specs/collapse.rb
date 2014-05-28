@@ -67,10 +67,7 @@ describe AttributeStruct do
         end
 
         it 'should return both assigned values as an array' do
-          @dump['direct'].must_equal [
-            {'assignment' => true},
-            {'assignment' => false}
-          ]
+          @dump['direct']['assignment'].must_equal [true, false]
         end
 
       end
