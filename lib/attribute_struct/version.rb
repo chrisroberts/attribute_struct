@@ -5,5 +5,5 @@ class AttributeStruct
   class Version < ::Gem::Version
   end
   # Current library version
-  VERSION = Version.new('0.2.1')
+  VERSION = Version.new('0.2.2')
 end

@@ -51,6 +51,16 @@ which gives:
    "client"=>{"general"=>{"enabled"=>false}}}}
 ```
 
+### IRB
+
+IRB expects some things to be around like `#inspect` and `#to_s`. Before
+using `AttributeStruct` in IRB, enable compat mode:
+
+```ruby
+> require 'attribute_struct'
+> AttributeStruct.irb_compat!
+```
+
 ## Information
 
 * Repo: https://github.com/chrisroberts/attribute_struct

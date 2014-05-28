@@ -1,3 +1,9 @@
+## v0.2.2
+* Update block evaluation assignment to prevent value knockout
+* Fix `#is_a?` behavior and include base class in check list
+* Add `#respond_to?` method
+* Add irb helper module
+
 ## v0.2.0
 * Add support for value setting into given context level
 * Add #build helper method
