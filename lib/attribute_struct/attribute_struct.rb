@@ -190,7 +190,7 @@ class AttributeStruct < BasicObject
           end
         end
       elsif(!args.empty? && block)
-        base = @table[sym]
+        base = @table.fetch(sym, _klass_new)
         leaf = base
         key = sym
         args.each do |arg|
