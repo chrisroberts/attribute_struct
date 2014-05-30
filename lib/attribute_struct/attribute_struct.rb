@@ -190,12 +190,9 @@ class AttributeStruct < BasicObject
           end
         end
       elsif(!args.empty? && block)
-        base = @table.fetch(sym, _klass_new)
-        leaf = base
-        key = sym
-        args.each do |arg|
+        result = leaf = base = @table.fetch(sym, _klass_new)
+        args.flatten.each do |arg|
           leaf = base[arg]
-          key = arg
           unless(leaf.is_a?(_klass))
             leaf = _klass_new
             base._set(arg, leaf)
@@ -206,18 +203,14 @@ class AttributeStruct < BasicObject
           orig = leaf
           leaf = orig.parent._klass_new
         end
-        if(block.arity == 0)
-          leaf.instance_exec(&block)
-        else
-          leaf.instance_exec(leaf, &block)
-        end
+        block.arity == 0 ? leaf._build(&block) : leaf._build(leaf, &block)
         if(orig)
           orig = [orig] unless orig.is_a?(::Array)
           orig << leaf
         else
           orig = leaf
         end
-        @table[sym] = orig
+        @table[sym] = result
       else
         if(args.size > 1)
           @table[sym] = _klass_new unless @table[sym].is_a?(_klass)
@@ -421,6 +414,7 @@ class AttributeStruct < BasicObject
   end
   alias_method :klass!, :_klass
   alias_method :class!, :_klass
+  alias_method :class, :_klass
 
   # @return [AttributeStruct] new struct instance
   # @note will set self as parent and propogate camelizing status
