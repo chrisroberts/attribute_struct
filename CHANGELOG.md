@@ -1,3 +1,9 @@
+## v0.2.4
+* Revert #class method removal (required by hash helpers when duping)
+* Set base prior to path walking
+* Initialize struct if nil is encountered
+* Collapse values at leaf
+
 ## v0.2.2
 * Update block evaluation assignment to prevent value knockout
 * Fix `#is_a?` behavior and include base class in check list
