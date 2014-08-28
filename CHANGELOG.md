@@ -1,3 +1,6 @@
+## v0.2.8
+* Fix class mismatch issue
+
 ## v0.2.6
 * Vendor `Mash` and expand to provide required deep_merge functionality
 * Remove external dependencies
