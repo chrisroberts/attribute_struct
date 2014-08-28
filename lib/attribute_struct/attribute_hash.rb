@@ -1,4 +1,4 @@
-require 'hashie/extensions/deep_merge'
+require 'attribute_struct'
 
 class AttributeStruct
 
@@ -53,8 +53,6 @@ class AttributeStruct
   # This class has dubious semantics and we only have it so that people can write
   # params[:key] instead of params['key'].
   class Mash < ::Hash
-
-    include ::Hashie::Extensions::DeepMerge
 
     # @param constructor<Object>
     #   The default value for the mash. Defaults to an empty hash.
@@ -232,6 +230,37 @@ class AttributeStruct
         value
       end
     end
+
+    # == add required deep merging support
+
+    public
+
+    # Perform deep merge
+    #
+    # @return [AttributeStruct::Mash] merged hash
+    def deep_merge(hash)
+      unless(hash.is_a?(Hash))
+        raise ArgumentError.new "Expecting `Hash` type. Received: `#{hash.class}`"
+      end
+      new_self = self.dup
+      hash.each do |k,v|
+        if(new_self[k].is_a?(Hash) && v.is_a?(Hash))
+          new_self[k] = new_self[k].deep_merge(v)
+        else
+          new_self[k] = v
+        end
+      end
+      new_self
+    end
+
+    # Perform deep merge and replace contents of self
+    #
+    # @return [self]
+    def deep_merge!(hash)
+      self.replace(self.deep_merge(hash))
+      self
+    end
+
   end
 
   AttributeHash = Mash

@@ -10,6 +10,5 @@ Gem::Specification.new do |s|
   s.homepage = 'http://github.com/chrisroberts/attribute_struct'
   s.description = 'Attribute structures'
   s.require_path = 'lib'
-  s.add_dependency 'hashie', '>= 2.0.0'
   s.files = Dir['**/*']
 end
