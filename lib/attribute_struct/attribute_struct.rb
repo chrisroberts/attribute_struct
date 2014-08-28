@@ -1,3 +1,4 @@
+require 'attribute_struct'
 require 'attribute_struct/irb_compat'
 
 class AttributeStruct < BasicObject
@@ -6,8 +7,6 @@ class AttributeStruct < BasicObject
 
     # @return [Truthy, Falsey] global flag for camel keys
     attr_reader :camel_keys
-    # @return [Truthy, Falsey] force chef tooling (Mash)
-    attr_accessor :force_chef
 
     # Automatically converts keys to camel case
     #
@@ -26,24 +25,9 @@ class AttributeStruct < BasicObject
       end
     end
 
-    # Determine what hash library to load based on availability
-    def load_the_hash
-      unless(@hash_loaded)
-        if(defined?(Chef) || force_chef)
-          require 'chef/mash'
-          require 'chef/mixin/deep_merge'
-          @hash_loaded = :chef
-        else
-          require 'attribute_struct/attribute_hash'
-          @hash_loaded = :attribute_hash
-        end
-      end
-    end
-
-    # @return [AttributeStruct::AttributeHash, Mash]
+    # @return [AttributeStruct::AttributeHash]
     def hashish
-      load_the_hash
-      @hash_loaded == :chef ? ::Mash : ::AttributeStruct::AttributeHash
+      ::AttributeStruct::AttributeHash
     end
 
     # Create AttributeStruct instance and dump the resulting hash
@@ -73,7 +57,6 @@ class AttributeStruct < BasicObject
   # @param init_hash [Hash] hash to initialize struct
   # @yield block to execute within struct context
   def initialize(init_hash=nil, &block)
-    _klass.load_the_hash
     @_camel_keys = _klass.camel_keys
     @_arg_state = __hashish.new
     @table = __hashish.new
@@ -326,11 +309,7 @@ class AttributeStruct < BasicObject
   def _merge(overlay)
     source = _deep_copy
     dest = overlay._deep_copy
-    if(defined?(::Chef))
-      result = ::Chef::Mixin::DeepMerge.merge(source, dest)
-    else
-      result = source.deep_merge(dest)
-    end
+    result = source.deep_merge(dest)
     _klass.new(result)
   end
 
@@ -346,7 +325,7 @@ class AttributeStruct < BasicObject
 
   # @return [Class] hashish type available
   def __hashish
-    defined?(::Chef) ? ::Mash : ::AttributeStruct::AttributeHash
+    ::AttributeStruct::AttributeHash
   end
 
   # Provide dup of instance
@@ -486,3 +465,5 @@ class AttributeStruct < BasicObject
   end
 
 end
+
+require 'attribute_struct/attribute_hash'
