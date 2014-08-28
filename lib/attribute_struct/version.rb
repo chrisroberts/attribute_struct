@@ -1,4 +1,4 @@
-require 'attribute_struct'
+require 'attribute_struct/attribute_struct'
 
 class AttributeStruct
   # Current library version

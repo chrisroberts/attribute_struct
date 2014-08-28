@@ -1,4 +1,3 @@
-require 'attribute_struct'
 require 'attribute_struct/irb_compat'
 
 class AttributeStruct < BasicObject
@@ -467,3 +466,4 @@ class AttributeStruct < BasicObject
 end
 
 require 'attribute_struct/attribute_hash'
+require 'attribute_struct/version'
