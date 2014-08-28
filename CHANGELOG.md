@@ -1,3 +1,7 @@
+## v0.2.6
+* Vendor `Mash` and expand to provide required deep_merge functionality
+* Remove external dependencies
+
 ## v0.2.4
 * Revert #class method removal (required by hash helpers when duping)
 * Set base prior to path walking
