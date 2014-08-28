@@ -107,7 +107,7 @@ class AttributeStruct < BasicObject
   # @param traverse [TrueClass, FalseClass] traverse towards root for matching key
   # @return [Object, NilClass]
   def _state(key, traverse=true)
-    if(_arg_state.keys.include?(key))
+    if(_arg_state.has_key?(key))
       _arg_state[key]
     else
       if(traverse && _parent)
