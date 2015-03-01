@@ -23,8 +23,6 @@ describe AttributeStruct do
       struct.key 'value1', :with_hash => true
       struct.key 'value2', :with_hash => true
       struct = struct._dump
-      puts '*******'
-      p struct
       struct['key'].first.must_equal ['value1', 'with_hash' => true]
       struct['key'].last.must_equal ['value2', 'with_hash' => true]
     end
