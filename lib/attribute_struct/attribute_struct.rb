@@ -46,6 +46,8 @@ class AttributeStruct < BasicObject
 
   end
 
+  class CollapseArray < ::Array; end
+
   # @return [Truthy, Falsey] current camelizing setting
   attr_reader :_camel_keys
   # @return [AtributeStruct::AttributeHash, Mash] holding space for state
@@ -194,7 +196,7 @@ class AttributeStruct < BasicObject
         end
         @table[sym] = result
       else
-        if(args.size > 1)
+        if(args.size > 1 && args.all?{|i| i.is_a?(::String) || i.is_a?(::Symbol)})
           @table[sym] = _klass_new unless @table[sym].is_a?(_klass)
           endpoint = args.inject(@table[sym]) do |memo, k|
             unless(memo[k].is_a?(_klass))
@@ -205,11 +207,11 @@ class AttributeStruct < BasicObject
           return endpoint # custom break out
         else
           if(_state(:value_collapse) && !(leaf = @table[sym]).nil?)
-            leaf = [leaf] unless leaf.is_a?(::Array)
-            leaf << args.first
+            leaf = CollapseArray.new.push(leaf) unless leaf.is_a?(CollapseArray)
+            leaf << (args.size > 1 ? args : args.first)
             @table[sym] = leaf
           else
-            @table[sym] = args.first
+            @table[sym] = (args.size > 1 ? args : args.first)
           end
         end
       end
