@@ -10,5 +10,5 @@ Gem::Specification.new do |s|
   s.homepage = 'http://github.com/chrisroberts/attribute_struct'
   s.description = 'Attribute structures'
   s.require_path = 'lib'
-  s.files = Dir['**/*']
+  s.files = Dir['lib/**/*'] + %w(attribute_struct.gemspec README.md CHANGELOG.md CONTRIBUTING.md LICENSE)
 end
