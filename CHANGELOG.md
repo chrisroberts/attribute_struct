@@ -1,3 +1,6 @@
+## v0.2.10
+* Add support for multi parameter set
+
 ## v0.2.8
 * Fix class mismatch issue
 
