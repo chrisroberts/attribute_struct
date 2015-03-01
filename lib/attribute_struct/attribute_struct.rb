@@ -76,6 +76,7 @@ class AttributeStruct < BasicObject
   def _build(&block)
     self.instance_exec(&block)
   end
+  alias_method :build!, :_build
 
   # Set state into current context
   #
@@ -84,6 +85,7 @@ class AttributeStruct < BasicObject
   def _set_state(args={})
     _arg_state.merge!(args)
   end
+  alias_method :set_state!, :_set_state
 
   # Value of requested state
   #
@@ -99,6 +101,7 @@ class AttributeStruct < BasicObject
       end
     end
   end
+  alias_method :state!, :_state
 
   # Enable/disable camel keys
   #
@@ -238,11 +241,13 @@ class AttributeStruct < BasicObject
   def _keys
     _data.keys
   end
+  alias_method :keys!, :_keys
 
   # @return [AttributeStruct::AttributeHash, Mash] underlying struct data
   def _data
     @table
   end
+  alias_method :data!, :_data
 
   # Delete entry from struct
   #
@@ -302,6 +307,7 @@ class AttributeStruct < BasicObject
     end
     self
   end
+  alias_method :load!, :_load
 
   # Perform deep merge
   #
@@ -426,6 +432,7 @@ class AttributeStruct < BasicObject
     @_parent = obj if obj
     @_parent
   end
+  alias_method :parent!, :_parent
 
   # @return [AttributeStruct, NilClass] root of the struct or nil if self is root
   def _root
@@ -435,6 +442,7 @@ class AttributeStruct < BasicObject
     end
     r
   end
+  alias_method :root!, :_root
 
   # Create an Array and evaluate discovered AttributeStructs
   #
