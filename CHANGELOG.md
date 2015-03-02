@@ -1,3 +1,7 @@
+## v0.2.12
+* Implementation updates to monkey camels helper
+* Provide bang style helper methods for all helpers
+
 ## v0.2.10
 * Add support for multi parameter set
 

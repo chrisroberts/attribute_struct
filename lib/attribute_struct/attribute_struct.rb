@@ -46,6 +46,7 @@ class AttributeStruct < BasicObject
 
   end
 
+  # Specialized array for collapsing values
   class CollapseArray < ::Array; end
 
   # @return [Truthy, Falsey] current camelizing setting

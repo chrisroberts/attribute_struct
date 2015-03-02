@@ -1,4 +1,4 @@
-## AttributeStruct
+# AttributeStruct
 
 This is a helper library that essentially builds hashes. It
 wraps hash building with a nice DSL to make it slightly cleaner,
@@ -8,7 +8,7 @@ more robust, and provide extra features.
 
 * [![Build Status](https://api.travis-ci.org/chrisroberts/attribute_struct.png)](https://travis-ci.org/chrisroberts/attribute_struct)
 
-### Usage
+## Usage
 
 ```ruby
 require 'attribute_struct'
@@ -51,7 +51,7 @@ which gives:
    "client"=>{"general"=>{"enabled"=>false}}}}
 ```
 
-### IRB
+## IRB
 
 IRB expects some things to be around like `#inspect` and `#to_s`. Before
 using `AttributeStruct` in IRB, enable compat mode:
