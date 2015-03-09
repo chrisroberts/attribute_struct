@@ -1,3 +1,6 @@
+## v0.2.14
+* Fix `:value_collapse` option to prevent multiple nestings
+
 ## v0.2.12
 * Implementation updates to monkey camels helper
 * Provide bang style helper methods for all helpers
