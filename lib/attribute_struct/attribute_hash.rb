@@ -225,7 +225,7 @@ class AttributeStruct
       if value.class == Hash
         Mash.from_hash(value)
       elsif value.is_a?(Array)
-        value.collect { |e| convert_value(e) }
+        value.class.new.replace(value.collect { |e| convert_value(e) })
       else
         value
       end
