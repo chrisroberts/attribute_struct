@@ -172,7 +172,9 @@ class AttributeStruct < BasicObject
           if(orig == :__unset__)
             @table[sym] = base
           else
-            orig = [orig] unless orig.is_a?(::Array)
+            unless(orig.is_a?(CollapseArray))
+              orig = CollapseArray.new.push(orig)
+            end
             orig << base
             @table[sym] = orig
           end
@@ -193,14 +195,16 @@ class AttributeStruct < BasicObject
         end
         block.arity == 0 ? leaf._build(&block) : leaf._build(leaf, &block)
         if(orig)
-          orig = [orig] unless orig.is_a?(::Array)
+          unless(orig.is_a?(CollapseArray))
+            orig = CollapseArray.new.push(orig)
+          end
           orig << leaf
         else
           orig = leaf
         end
-        @table[sym] = result
+        @table[sym] = orig
       else
-        if(args.size > 1 && args.all?{|i| i.is_a?(::String) || i.is_a?(::Symbol)})
+        if(args.size > 1 && args.all?{|i| i.is_a?(::String) || i.is_a?(::Symbol)} && !_state(:value_collapse))
           @table[sym] = _klass_new unless @table[sym].is_a?(_klass)
           endpoint = args.inject(@table[sym]) do |memo, k|
             unless(memo[k].is_a?(_klass))
@@ -211,7 +215,9 @@ class AttributeStruct < BasicObject
           return endpoint # custom break out
         else
           if(_state(:value_collapse) && !(leaf = @table[sym]).nil?)
-            leaf = CollapseArray.new.push(leaf) unless leaf.is_a?(CollapseArray)
+            unless(leaf.is_a?(CollapseArray))
+              leaf = CollapseArray.new.push(leaf)
+            end
             leaf << (args.size > 1 ? args : args.first)
             @table[sym] = leaf
           else
