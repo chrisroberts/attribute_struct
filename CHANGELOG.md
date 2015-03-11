@@ -1,3 +1,6 @@
+## v0.2.16
+* Fix regression mixed argument and block set returning second level struct
+
 ## v0.2.14
 * Fix `:value_collapse` option to prevent multiple nestings
 
