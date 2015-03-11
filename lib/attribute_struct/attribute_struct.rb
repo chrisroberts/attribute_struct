@@ -202,7 +202,7 @@ class AttributeStruct < BasicObject
         else
           orig = leaf
         end
-        @table[sym] = orig
+        @table[sym] = result
       else
         if(args.size > 1 && args.all?{|i| i.is_a?(::String) || i.is_a?(::Symbol)} && !_state(:value_collapse))
           @table[sym] = _klass_new unless @table[sym].is_a?(_klass)
