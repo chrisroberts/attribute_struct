@@ -144,6 +144,9 @@ describe AttributeStruct do
           value2 do
             nested true
           end
+          value3 do
+          end
+          value4 nil
         end
       end
 
@@ -156,6 +159,8 @@ describe AttributeStruct do
         dump['value1'].must_equal true
         dump['value2'].must_be_kind_of Hash
         dump['value2']['nested'].must_equal true
+        dump['value3'].must_equal nil
+        dump['value4'].must_equal nil
       end
     end
 
