@@ -1,3 +1,6 @@
+## v0.2.18
+* Fix `AttributeStruct#dump!` to properly handle nil-type values
+
 ## v0.2.16
 * Fix regression mixed argument and block set returning second level struct
 
