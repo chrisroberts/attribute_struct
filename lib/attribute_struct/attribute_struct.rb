@@ -273,10 +273,10 @@ class AttributeStruct < BasicObject
           v.is_a?(_klass) ? v._dump : v
         end
         val = value.is_a?(::Hash) ? __hashish[*flat.flatten(1)] : flat
-      elsif(value.is_a?(_klass))
+      elsif(value.is_a?(_klass) && !value.nil?)
         val = value._dump
       else
-        val = value
+        val = value.nil? ? nil : value
       end
       [key, val]
     end
