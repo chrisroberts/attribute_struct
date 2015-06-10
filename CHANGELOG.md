@@ -1,3 +1,6 @@
+## v0.2.20
+* Fix: remove nil structs
+
 ## v0.2.18
 * Fix `AttributeStruct#dump!` to properly handle nil-type values
 
