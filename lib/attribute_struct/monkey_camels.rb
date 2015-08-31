@@ -36,6 +36,11 @@ unless(defined?(MonkeyCamels))
 
     module Humps
 
+      # @return [TrueClass, FalseClass] specific style requested
+      def _hump_format_requested?
+        @__not_camel != nil
+      end
+
       # @return [TrueClass, FalseClass] camelized
       def _camel?
         !@__not_camel
@@ -46,12 +51,14 @@ unless(defined?(MonkeyCamels))
         @__not_camel = true
         self
       end
+      alias_method :disable_camel!, :_no_hump
 
       # @return [self] enable camelizing
       def _hump
         @__not_camel = false
         self
       end
+      alias_method :camel!, :_hump
 
     end
 
