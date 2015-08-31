@@ -381,7 +381,7 @@ class AttributeStruct < BasicObject
   # @return [String, Symbol]
   def _process_key(key, *args)
     key = key.to_s
-    if(_camel_keys && _camel_keys_action)
+    if(_camel_keys && _camel_keys_action && !key._hump_format_requested?)
       case _camel_keys_action
       when :auto_disable
         key._no_hump
@@ -430,6 +430,7 @@ class AttributeStruct < BasicObject
   def _camel_keys_set(v)
     @_camel_keys_set = v
   end
+  alias_method :camel_keys_set!, :_camel_keys_set
 
   # @return [Symbol, NilClass] :auto_disable or :auto_enable
   def _camel_keys_action
