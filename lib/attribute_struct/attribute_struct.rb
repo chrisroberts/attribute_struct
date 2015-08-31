@@ -1,6 +1,8 @@
-require 'attribute_struct/irb_compat'
+require 'attribute_struct'
 
 class AttributeStruct < BasicObject
+
+  autoload :Mash, 'attribute_struct/attribute_hash'
 
   class << self
 
@@ -214,14 +216,31 @@ class AttributeStruct < BasicObject
           end
           return endpoint # custom break out
         else
+          if(args.size > 1)
+            val = args.map do |v|
+              if(v.is_a?(::Hash) && _state(:hash_load_struct))
+                val = _klass_new
+                val._load(v)
+              else
+                v
+              end
+            end
+          else
+            if(args.first.is_a?(::Hash) && _state(:hash_load_struct))
+              val = _klass_new
+              val._load(args.first)
+            else
+              val = args.first
+            end
+          end
           if(_state(:value_collapse) && !(leaf = @table[sym]).nil?)
             unless(leaf.is_a?(CollapseArray))
               leaf = CollapseArray.new.push(leaf)
             end
-            leaf << (args.size > 1 ? args : args.first)
+            leaf << val
             @table[sym] = leaf
           else
-            @table[sym] = (args.size > 1 ? args : args.first)
+            @table[sym] = val
           end
         end
       end
@@ -301,7 +320,6 @@ class AttributeStruct < BasicObject
       end
     end
     hashish.each do |key, value|
-      key = key.dup
       if(value.is_a?(::Enumerable))
         flat = value.map do |v|
           v.is_a?(::Hash) ? _klass.new(v) : v
@@ -380,7 +398,7 @@ class AttributeStruct < BasicObject
   # @param args [Object] argument list (:force will force processing)
   # @return [String, Symbol]
   def _process_key(key, *args)
-    key = key.to_s
+    key = ::CamelString.new(key.to_s)
     if(_camel_keys && _camel_keys_action && !key._hump_format_requested?)
       case _camel_keys_action
       when :auto_disable
@@ -394,10 +412,6 @@ class AttributeStruct < BasicObject
         "#{part[0,1].upcase}#{part[1,part.size]}"
       end.join.to_sym
     else
-      if(_camel_keys)
-        # Convert so Hash doesn't make a new one and lose the meta
-        key = ::CamelString.new(key) unless key.is_a?(::CamelString)
-      end
       key
     end
   end
