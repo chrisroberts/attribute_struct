@@ -1,3 +1,5 @@
+require 'attribute_struct'
+require 'attribute_struct/monkey_camels'
 require 'minitest/autorun'
 
 describe AttributeStruct do
@@ -174,6 +176,26 @@ describe AttributeStruct do
         @struct['value1'].must_equal true
         @struct['value2'].nested.must_equal true
       end
+    end
+
+    describe 'setting Hash type' do
+
+      before do
+        @struct = AttributeStruct.new
+      end
+
+      it 'should convert into struct when state is set' do
+        @struct._set_state(:hash_load_struct => true)
+        @struct.value({:a => 1, :b => 2, :c => {:x => 3}})
+        @struct.value.c.x.must_equal 3
+      end
+
+      it 'should not convert into struct when state is unset' do
+        @struct._set_state(:hash_load_struct => false)
+        @struct.value({:a => 1, :b => 2, :c => {:x => 3}})
+        @struct.value.must_be_kind_of Hash
+      end
+
     end
   end
 end
