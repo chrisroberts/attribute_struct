@@ -21,9 +21,13 @@ unless(defined?(MonkeyCamels))
     # Create a camel copy based on settings
     #
     # @return [String]
-    def camel_initialize_copy(orig)
+    def camel_initialize_copy(orig, hump=nil)
       new_val = un_camel_initialize_copy(orig)
-      orig._camel? ? new_val : new_val._no_hump
+      if(hump.nil?)
+        orig._camel? ? new_val : new_val._no_hump
+      else
+        new_val._no_hump if hump == false
+      end
     end
 
     # Provide string formatted based on hump setting
