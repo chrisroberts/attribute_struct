@@ -21,9 +21,13 @@ unless(defined?(MonkeyCamels))
     # Create a camel copy based on settings
     #
     # @return [String]
-    def camel_initialize_copy(orig)
+    def camel_initialize_copy(orig, hump=nil)
       new_val = un_camel_initialize_copy(orig)
-      orig._camel? ? new_val : new_val._no_hump
+      if(hump.nil?)
+        orig._camel? ? new_val : new_val._no_hump
+      else
+        new_val._no_hump if hump == false
+      end
     end
 
     # Provide string formatted based on hump setting
@@ -36,6 +40,11 @@ unless(defined?(MonkeyCamels))
 
     module Humps
 
+      # @return [TrueClass, FalseClass] specific style requested
+      def _hump_format_requested?
+        @__not_camel != nil
+      end
+
       # @return [TrueClass, FalseClass] camelized
       def _camel?
         !@__not_camel
@@ -46,12 +55,14 @@ unless(defined?(MonkeyCamels))
         @__not_camel = true
         self
       end
+      alias_method :disable_camel!, :_no_hump
 
       # @return [self] enable camelizing
       def _hump
         @__not_camel = false
         self
       end
+      alias_method :camel!, :_hump
 
     end
 

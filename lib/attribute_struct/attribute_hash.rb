@@ -1,4 +1,4 @@
-require 'attribute_struct/attribute_struct'
+require 'attribute_struct'
 
 class AttributeStruct
 
@@ -211,7 +211,7 @@ class AttributeStruct
     #
     # @api private
     def convert_key(key)
-      key.kind_of?(Symbol) ? key.to_s : key
+      key.kind_of?(Symbol) || key.kind_of?(String) ? CamelString.new(key.to_s) : key
     end
 
     # @param value<Object> The value to convert.
