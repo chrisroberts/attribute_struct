@@ -1,3 +1,8 @@
+## v0.2.22
+* Add more helper method bang aliases
+* Properly persist camel data on Hash keys
+* Support optional automatic AttributeStruct loading on Hash set
+
 ## v0.2.20
 * Fix: remove nil structs
 
