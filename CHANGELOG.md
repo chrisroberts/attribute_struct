@@ -1,3 +1,8 @@
+## v0.2.24
+* Fix `#_root` helper to properly check for parent
+* Always use the `#_klass_new` helper
+* Support optional arguments/block to `#_klass_new`
+
 ## v0.2.22
 * Add more helper method bang aliases
 * Properly persist camel data on Hash keys
