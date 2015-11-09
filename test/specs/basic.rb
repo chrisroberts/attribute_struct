@@ -24,14 +24,16 @@ describe AttributeStruct do
         @struct._set('1') do
           value 100
         end
+        @struct_hash = @struct._dump
       end
 
       it 'allows method based access' do
         @struct.method.based['access'].must_equal 100
+        @struct_hash['method']['based']['access'].must_equal 100
       end
 
       it 'allows method and parameter based access' do
-        @struct.method.and.parameter.based['access'].must_equal 100
+        @struct_hash['method']['and']['parameter']['based']['access'].must_equal 100
       end
 
       it 'allows block based access' do
@@ -41,18 +43,23 @@ describe AttributeStruct do
       it 'allows block and parameter based access' do
         @struct.block.and.parameter.based['access'].must_equal 100
         @struct.block.and.parameter.based.nested.with.block['access'].must_equal 100
+        @struct_hash['block']['and']['parameter']['based']['access'].must_equal 100
+        @struct_hash['block']['and']['parameter']['based']['nested']['with']['block']['access'].must_equal 100
       end
 
       it 'allows block only access' do
         @struct.block_only['access'].must_equal 100
+        @struct_hash['block_only']['access'].must_equal 100
       end
 
       it 'allows hash style access' do
         @struct['method'][:based]['access'].must_equal 100
+        @struct_hash['method']['based']['access'].must_equal 100
       end
 
       it 'allows _set for invalid method names' do
         @struct['1']['value'].must_equal 100
+        @struct_hash['1']['value'].must_equal 100
       end
 
     end
