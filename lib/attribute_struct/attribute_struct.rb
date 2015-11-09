@@ -322,7 +322,7 @@ class AttributeStruct < BasicObject
     hashish.each do |key, value|
       if(value.is_a?(::Enumerable))
         flat = value.map do |v|
-          v.is_a?(::Hash) ? _klass.new(v) : v
+          v.is_a?(::Hash) ? _klass_new(v) : v
         end
         value = value.is_a?(::Hash) ? __hashish[*flat.flatten(1)] : flat
       end
@@ -344,7 +344,7 @@ class AttributeStruct < BasicObject
     source = _deep_copy
     dest = overlay._deep_copy
     result = source.deep_merge(dest)
-    _klass.new(result)
+    _klass_new(result)
   end
 
   # Perform deep merge in place
@@ -427,8 +427,8 @@ class AttributeStruct < BasicObject
 
   # @return [AttributeStruct] new struct instance
   # @note will set self as parent and propogate camelizing status
-  def _klass_new
-    n = _klass.new
+  def _klass_new(*args, &block)
+    n = _klass.new(*args, &block)
     unless(_camel_keys_action == :auto_discovery)
       n._camel_keys_set(_camel_keys_action)
     end
@@ -461,7 +461,7 @@ class AttributeStruct < BasicObject
   # @return [AttributeStruct, NilClass] root of the struct or nil if self is root
   def _root
     r = self
-    until(r._parent.nil?)
+    until(r._parent == nil)
       r = r._parent
     end
     r
