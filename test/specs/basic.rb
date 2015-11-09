@@ -84,8 +84,13 @@ describe AttributeStruct do
       end
 
       it 'should return as nil' do
-        @struct.must_be_nil
+        @struct.nil?.must_equal true
       end
+
+      it 'should not equal nil' do
+        @struct.wont_be nil
+      end
+
     end
 
     describe 'array helper' do
