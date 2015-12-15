@@ -6,8 +6,20 @@ class AttributeStruct < BasicObject
 
   class << self
 
+    # @return [Hash] valid styles and mapped value
+    VALID_CAMEL_STYLES = {
+      :bactrain => :no_leading,
+      :no_leading_hump => :no_leading,
+      :no_leading => :no_leading,
+      :dromedary => :leading,
+      :leading_hump => :leading,
+      :leading => :leading
+    }
+
     # @return [Truthy, Falsey] global flag for camel keys
     attr_reader :camel_keys
+    # @return [Symbol] camel key style
+    attr_reader :camel_style
 
     # Automatically converts keys to camel case
     #
@@ -16,6 +28,28 @@ class AttributeStruct < BasicObject
     def camel_keys=(val)
       load_the_camels if val
       @camel_keys = !!val
+    end
+
+    # Set default style of camel keys
+    #
+    # @param val [Symbol]
+    # @return [Symbol]
+    def camel_style=(val)
+      @camel_style = validate_camel_style(val)
+    end
+
+    # Validate requested camel style and return mapped value used
+    # internally
+    #
+    # @param style [Symbol]
+    # @return [Symbol]
+    # @raises [ArgumentError]
+    def validate_camel_style(style)
+      if(VALID_CAMEL_STYLES.has_key?(style))
+        VALID_CAMEL_STYLES[style]
+      else
+        raise ArgumentError.new "Unsupported camel style provided `#{style.inspect}`! (Allowed: #{VALID_CAMEL_STYLES.keys(&:inspect).join(', ')})"
+      end
     end
 
     # Loads helpers for camel casing
@@ -53,6 +87,8 @@ class AttributeStruct < BasicObject
 
   # @return [Truthy, Falsey] current camelizing setting
   attr_reader :_camel_keys
+  # @return [Symbol] current camel style
+  attr_reader :_camel_style
   # @return [AtributeStruct::AttributeHash, Mash] holding space for state
   attr_reader :_arg_state
 
@@ -113,6 +149,14 @@ class AttributeStruct < BasicObject
   def _camel_keys=(val)
     _klass.load_the_camels if val
     @_camel_keys = !!val
+  end
+
+  # Set style of camel keys
+  #
+  # @param val [Symbol]
+  # @return [Symbol]
+  def _camel_style=(val)
+    @_camel_style = ::AttributeStruct.validate_camel_style(val)
   end
 
   # Direct data access
@@ -408,9 +452,13 @@ class AttributeStruct < BasicObject
       end
     end
     if((_camel_keys && key._camel?) || args.include?(:force))
-      key.to_s.split('_').map do |part|
-        "#{part[0,1].upcase}#{part[1,part.size]}"
-      end.join.to_sym
+      camel_args = [key]
+      if(key._hump_style || _camel_style == :no_leading)
+        unless(key._hump_style == :leading_hump)
+          camel_args << false
+        end
+      end
+      ::Bogo::Utility.camel(*camel_args)
     else
       key
     end
@@ -433,6 +481,7 @@ class AttributeStruct < BasicObject
       n._camel_keys_set(_camel_keys_action)
     end
     n._camel_keys = _camel_keys
+    n._camel_style = _camel_style if _camel_style
     n._parent(self)
     n
   end
