@@ -10,5 +10,7 @@ Gem::Specification.new do |s|
   s.homepage = 'http://github.com/chrisroberts/attribute_struct'
   s.description = 'Attribute structures'
   s.require_path = 'lib'
+  s.add_runtime_dependency 'bogo', '>= 0.1.31', '< 0.3.0'
+  s.add_development_dependency 'minitest'
   s.files = Dir['lib/**/*'] + %w(attribute_struct.gemspec README.md CHANGELOG.md CONTRIBUTING.md LICENSE)
 end
