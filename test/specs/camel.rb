@@ -1,6 +1,7 @@
 require 'minitest/autorun'
 
 describe AttributeStruct do
+
   describe 'Camel usage' do
     before do
       AttributeStruct.camel_keys = true
@@ -40,6 +41,62 @@ describe AttributeStruct do
       dump['ValueTwo']['Nesting'].must_equal true
     end
   end
+
+  describe 'Camel styling' do
+
+    it 'should automatically lead with upcase' do
+      @struct = AttributeStruct.new
+      @struct._camel_keys = true
+      @struct.value_one true
+      @struct.value_two{ nesting true }
+      dump = @struct._dump
+      dump['ValueOne'].must_equal true
+      dump['ValueTwo'].must_equal 'Nesting' => true
+    end
+
+    it 'should allow defaulting to lead lowercase' do
+      @struct = AttributeStruct.new
+      @struct._camel_keys = true
+      @struct._camel_style = :no_leading_hump
+      @struct.value_one true
+      @struct.value_two{ nesting true }
+      dump = @struct._dump
+      dump['valueOne'].must_equal true
+      dump['valueTwo'].must_equal 'nesting' => true
+    end
+
+    it 'should allow mixing styles' do
+      @struct = AttributeStruct.new
+      @struct._camel_keys = true
+      @struct._camel_style = :no_leading_hump
+      @struct.value_one true
+      @struct.value_two{ nesting true }
+      x = @struct.value_three
+      x._camel_style = :leading_hump
+      x.inside_nesting true
+      dump = @struct._dump
+      dump['valueOne'].must_equal true
+      dump['valueTwo'].must_equal 'nesting' => true
+      dump['valueThree'].must_equal 'InsideNesting' => true
+    end
+
+    it 'should allow key level overrides' do
+      @struct = AttributeStruct.new
+      @struct._camel_keys = true
+      @struct._camel_style = :no_leading_hump
+      @struct.value_one true
+      @struct.value_two.set!('nesting'.leading_hump!).value true
+      x = @struct.value_three
+      x._camel_style = :leading_hump
+      x.set!('inside_nesting'.no_leading_hump!).value true
+      dump = @struct._dump
+      dump['valueOne'].must_equal true
+      dump['valueTwo']['Nesting'].must_equal 'value' => true
+      dump['valueThree']['insideNesting'].must_equal 'Value' => true
+    end
+
+  end
+
   describe 'Camel enabled imports' do
     before do
       @struct = AttributeStruct.new
@@ -77,4 +134,5 @@ describe AttributeStruct do
       hash['Fubar']['FooDar']['snake_case']['still_snake']['NowCamel']['NewCamel'].must_equal 'a camel!'
     end
   end
+
 end

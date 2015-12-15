@@ -64,6 +64,34 @@ unless(defined?(MonkeyCamels))
       end
       alias_method :camel!, :_hump
 
+      # @return [Symbol, NilClass] style of hump
+      def _hump_style
+        @__hump_style
+      end
+      alias_method :hump_style!, :_hump_style
+
+      # Set hump style to non-leading upcase
+      #
+      # @return [self]
+      def _bactrain
+        @__not_camel = false
+        @__hump_style = :no_leading_hump
+        self
+      end
+      alias_method :bactrain!, :_bactrain
+      alias_method :no_leading_hump!, :_bactrain
+
+      # Set hump style to leading upcase
+      #
+      # @return [self]
+      def _dromedary
+        @__not_camel = false
+        @__hump_style = :leading_hump
+        self
+      end
+      alias_method :dromedary!, :_dromedary
+      alias_method :leading_hump!, :_dromedary
+
     end
 
   end
@@ -78,6 +106,7 @@ unless(defined?(MonkeyCamels))
       super
       if(val.respond_to?(:_camel?))
         _no_hump unless val._camel?
+        @__hump_style = val._hump_style
       end
     end
   end
