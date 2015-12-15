@@ -1,3 +1,6 @@
+## v0.2.26
+* Add support for lowercase leading camel casing
+
 ## v0.2.24
 * Fix `#_root` helper to properly check for parent
 * Always use the `#_klass_new` helper
