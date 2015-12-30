@@ -1,3 +1,6 @@
+## v0.2.28
+* Set internal data at creation time, not after evaluation
+
 ## v0.2.26
 * Add support for lowercase leading camel casing
 
