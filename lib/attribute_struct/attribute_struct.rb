@@ -207,6 +207,7 @@ class AttributeStruct < BasicObject
             base = _klass_new
           end
         end
+        @table[sym] = base
         if(block.arity == 0)
           base.instance_exec(&block)
         else
@@ -227,6 +228,8 @@ class AttributeStruct < BasicObject
         end
       elsif(!args.empty? && block)
         result = leaf = base = @table.fetch(sym, _klass_new)
+        @table[sym] = result
+
         args.flatten.each do |arg|
           leaf = base[arg]
           unless(leaf.is_a?(_klass))
@@ -248,7 +251,6 @@ class AttributeStruct < BasicObject
         else
           orig = leaf
         end
-        @table[sym] = result
       else
         if(args.size > 1 && args.all?{|i| i.is_a?(::String) || i.is_a?(::Symbol)} && !_state(:value_collapse))
           @table[sym] = _klass_new unless @table[sym].is_a?(_klass)
