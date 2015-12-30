@@ -83,6 +83,16 @@ describe AttributeStruct do
         @struct.access['transport'].must_equal :udp
       end
 
+      it 'should have access to parent data' do
+        @struct.parent_access.nest1 do
+          nest2.nest3 do
+            value _parent._parent._parent.keys!.first
+          end
+        end
+        result = @struct._dump.to_smash
+        result.get(:parent_access, :nest1, :nest2, :nest3, :value).must_equal 'nest1'
+      end
+
     end
 
     describe 'nil behavior' do
@@ -209,5 +219,6 @@ describe AttributeStruct do
       end
 
     end
+
   end
 end
