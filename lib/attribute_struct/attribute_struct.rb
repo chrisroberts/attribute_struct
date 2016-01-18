@@ -470,7 +470,7 @@ class AttributeStruct < BasicObject
         key._hump
       end
     end
-    if((_camel_keys && key._camel?) || args.include?(:force))
+    if(_camel_keys && (key._camel? || args.include?(:force)))
       camel_args = [key]
       if(key._hump_style || _camel_style == :no_leading)
         unless(key._hump_style == :leading_hump)
