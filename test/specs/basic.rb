@@ -95,6 +95,26 @@ describe AttributeStruct do
 
     end
 
+    describe 'method based creation' do
+      before do
+        @struct = AttributeStruct.new do
+          item x.y.z(true)
+        end
+      end
+
+      it 'should generate single path Hash' do
+        @struct._dump.must_equal(
+          'item' => {
+            'x' => {
+              'y' => {
+                'z' => true
+              }
+            }
+          }
+        )
+      end
+    end
+
     describe 'nil behavior' do
       before do
         @struct = AttributeStruct.new
