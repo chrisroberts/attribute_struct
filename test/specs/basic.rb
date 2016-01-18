@@ -104,13 +104,12 @@ describe AttributeStruct do
 
       it 'should generate single path Hash' do
         @struct._dump.must_equal(
-          'item' => {
-            'x' => {
-              'y' => {
-                'z' => true
-              }
+          'x' => {
+            'y' => {
+              'z' => true
             }
-          }
+          },
+          'item' => true
         )
       end
     end
