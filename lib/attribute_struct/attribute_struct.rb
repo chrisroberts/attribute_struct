@@ -8,7 +8,7 @@ class AttributeStruct < BasicObject
 
     # @return [Hash] valid styles and mapped value
     VALID_CAMEL_STYLES = {
-      :bactrain => :no_leading,
+      :bactrian => :no_leading,
       :no_leading_hump => :no_leading,
       :no_leading => :no_leading,
       :dromedary => :leading,
@@ -330,22 +330,39 @@ class AttributeStruct < BasicObject
   end
   alias_method :delete!, :_delete
 
+  # Process and unpack items for dumping within deeply nested
+  # enumerable types
+  #
+  # @param item [Object]
+  # @return [Object]
+  def _dump_unpacker(item)
+    if(item.is_a?(::Enumerable))
+      if(item.respond_to?(:keys))
+        item.class[
+          *item.map do |entry|
+            _dump_unpacker(entry)
+          end.flatten(1)
+        ]
+      else
+        item.class[
+          *item.map do |entry|
+            _dump_unpacker(entry)
+          end
+        ]
+      end
+    elsif(item.is_a?(::AttributeStruct))
+      item.nil? ? :__unset__ : item._dump
+    else
+      item
+    end
+  end
+
   # @return [AttributeStruct::AttributeHash, Mash] dump struct to hashish
   def _dump
-    processed = @table.map do |key, value|
-      if(value.is_a?(::Enumerable))
-        flat = value.map do |v|
-          v.is_a?(_klass) ? v._dump : v
-        end
-        val = value.is_a?(::Hash) ? __hashish[*flat.flatten(1)] : flat
-      elsif(value.is_a?(_klass) && value.nil?)
-        next
-      elsif(value.is_a?(_klass) && !value.nil?)
-        val = value._dump
-      else
-        val = value.nil? ? nil : value
-      end
-      [key, val]
+    processed = @table.keys.map do |key|
+      value = @table[key]
+      val = _dump_unpacker(value)
+      [_dump_unpacker(key), val] unless val == :__unset__
     end.compact
     __hashish[*processed.flatten(1)]
   end
