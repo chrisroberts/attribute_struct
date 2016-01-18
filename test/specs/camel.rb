@@ -135,4 +135,10 @@ describe AttributeStruct do
     end
   end
 
+  it 'should not camel case when forced if struct has camel casing disabled' do
+    struct = AttributeStruct.new
+    struct._camel_keys = false
+    struct._process_key('my_key', :force).must_equal 'my_key'
+  end
+
 end
