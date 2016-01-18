@@ -73,13 +73,13 @@ unless(defined?(MonkeyCamels))
       # Set hump style to non-leading upcase
       #
       # @return [self]
-      def _bactrain
+      def _bactrian
         @__not_camel = false
         @__hump_style = :no_leading_hump
         self
       end
-      alias_method :bactrain!, :_bactrain
-      alias_method :no_leading_hump!, :_bactrain
+      alias_method :bactrian!, :_bactrian
+      alias_method :no_leading_hump!, :_bactrian
 
       # Set hump style to leading upcase
       #
