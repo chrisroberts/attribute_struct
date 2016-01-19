@@ -87,10 +87,13 @@ class AttributeStruct < BasicObject
 
   # @return [Truthy, Falsey] current camelizing setting
   attr_reader :_camel_keys
+  alias_method :camel_keys!, :_camel_keys
   # @return [Symbol] current camel style
   attr_reader :_camel_style
+  alias_method :camel_style!, :_camel_style
   # @return [AtributeStruct::AttributeHash, Mash] holding space for state
   attr_reader :_arg_state
+  alias_method :arg_state!, :_arg_state
 
   # Create new instance
   #
@@ -298,6 +301,11 @@ class AttributeStruct < BasicObject
   # @return [TrueClass, FalseClass] struct is nil (empty data)
   def nil?
     _data.empty?
+  end
+
+  # @return [TrueClass, FalseClass] struct is present (not empty)
+  def present?
+    !nil?
   end
 
   # Determine if self is a class
