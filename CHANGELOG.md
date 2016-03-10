@@ -1,3 +1,8 @@
+# v0.3.2
+* Update variable names within method_missing to prevent data collisions
+* Use constant for internal nil value
+* Check for internal nil value on set helper
+
 # v0.3.0
 * Only allow forced key processing when camel casing is enabled
 * Refactored dump implementation to better handle deeply nested structs
