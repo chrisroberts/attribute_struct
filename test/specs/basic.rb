@@ -142,11 +142,11 @@ describe AttributeStruct do
       end
 
       it 'should contain an array at my_array' do
-        @struct['my_array'].must_be_kind_of Array
+        @struct._dump['my_array'].must_be_kind_of Array
       end
 
       it 'should contain symbol in array' do
-        @struct['my_array'].must_include :item
+        @struct._dump['my_array'].must_include :item
       end
 
       it 'should contain an AttrubuteStruct instance in array' do
@@ -168,7 +168,7 @@ describe AttributeStruct do
       end
 
       it 'should contain value1' do
-        @struct['value1'].must_equal true
+        @struct._dump['value1'].must_equal true
       end
 
       it 'should not contain value2 in keys' do
@@ -214,8 +214,8 @@ describe AttributeStruct do
       end
 
       it 'should include all values defined in hash' do
-        @struct['value1'].must_equal true
-        @struct['value2'].nested.must_equal true
+        @struct._dump['value1'].must_equal true
+        @struct._dump['value2']['nested'].must_equal true
       end
     end
 
@@ -228,13 +228,40 @@ describe AttributeStruct do
       it 'should convert into struct when state is set' do
         @struct._set_state(:hash_load_struct => true)
         @struct.value({:a => 1, :b => 2, :c => {:x => 3}})
-        @struct.value.c.x.must_equal 3
+        @struct._dump['value']['c']['x'].must_equal 3
       end
 
       it 'should not convert into struct when state is unset' do
         @struct._set_state(:hash_load_struct => false)
         @struct.value({:a => 1, :b => 2, :c => {:x => 3}})
-        @struct.value.must_be_kind_of Hash
+        @struct._dump['value'].must_be_kind_of Hash
+      end
+
+    end
+
+    describe 'struct re-entry' do
+
+      before do
+        @struct = AttributeStruct.new do
+          fubar.feebar.things do
+            stuff 'here'
+            other 'things'
+          end
+          fubar.feebar.things.testings true
+          fubar.feebar.things do
+            ohai true
+          end
+          fubar.feebar do
+            items [1, 2]
+          end
+          fubar(:feebar) do
+            more_items 'yay'
+          end
+        end
+      end
+
+      it 'should contain all values' do
+        @struct._dump['fubar']['feebar']['things'].keys.sort.must_equal ['ohai', 'other', 'stuff', 'testings']
       end
 
     end
