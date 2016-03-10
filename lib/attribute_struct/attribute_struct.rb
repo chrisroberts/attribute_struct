@@ -196,109 +196,109 @@ class AttributeStruct < BasicObject
   # @yield provided block
   # @return [Object] existing value or newly set value
   # @note Dragons and unicorns all over in here
-  def method_missing(sym, *args, &block)
-    if((s = sym.to_s).end_with?('='))
-      s.slice!(-1, s.length)
-      sym = s
+  def method_missing(_sym, *_args, &_block)
+    if((_s = _sym.to_s).end_with?('='))
+      _s.slice!(-1, _s.length)
+      _sym = _s
     end
-    sym = _process_key(sym)
-    if(!args.empty? || block)
-      if(args.empty? && block)
-        base = @table.fetch(sym, UNSET_VALUE)
-        if(_state(:value_collapse) && !base.is_a?(self.class!))
-          orig = base
-          base = _klass_new
+    _sym = _process_key(_sym)
+    if(!_args.empty? || _block)
+      if(_args.empty? && _block)
+        _base = @table.fetch(_sym, UNSET_VALUE)
+        if(_state(:value_collapse) && !_base.is_a?(self.class!))
+          _orig = _base
+          _base = _klass_new
         else
-          unless(base.is_a?(self.class!))
-            base = _klass_new
+          unless(_base.is_a?(self.class!))
+            _base = _klass_new
           end
         end
-        @table[sym] = base
-        if(block.arity == 0)
-          base.instance_exec(&block)
+        @table[_sym] = _base
+        if(_block.arity == 0)
+          _base.instance_exec(&_block)
         else
-          base.instance_exec(base, &block)
+          _base.instance_exec(_base, &_block)
         end
-        if(orig.is_a?(::NilClass))
-          @table[sym] = base
+        if(_orig.is_a?(::NilClass))
+          @table[_sym] = _base
         else
-          if(orig == UNSET_VALUE)
-            @table[sym] = base
+          if(_orig == UNSET_VALUE)
+            @table[_sym] = _base
           else
-            unless(orig.is_a?(CollapseArray))
-              orig = CollapseArray.new.push(orig)
+            unless(_orig.is_a?(CollapseArray))
+              _orig = CollapseArray.new.push(_orig)
             end
-            orig << base
-            @table[sym] = orig
+            _orig << _base
+            @table[_sym] = _orig
           end
         end
-      elsif(!args.empty? && block)
-        result = leaf = base = @table.fetch(sym, _klass_new)
-        @table[sym] = result
+      elsif(!_args.empty? && _block)
+        _result = _leaf = _base = @table.fetch(_sym, _klass_new)
+        @table[_sym] = _result
 
-        args.flatten.each do |arg|
-          leaf = base[arg]
-          unless(leaf.is_a?(_klass))
-            leaf = _klass_new
-            base._set(arg, leaf)
-            base = leaf
+        _args.flatten.each do |_arg|
+          _leaf = base[_arg]
+          unless(_leaf.is_a?(_klass))
+            _leaf = _klass_new
+            _base._set(_arg, _leaf)
+            _base = _leaf
           end
         end
-        if(!leaf.nil? && _state(:value_collapse))
-          orig = leaf
-          leaf = orig.parent._klass_new
+        if(!_leaf.nil? && _state(:value_collapse))
+          _orig = _leaf
+          _leaf = _orig.parent._klass_new
         end
-        block.arity == 0 ? leaf._build(&block) : leaf._build(leaf, &block)
-        if(orig)
-          unless(orig.is_a?(CollapseArray))
-            orig = CollapseArray.new.push(orig)
+        _block.arity == 0 ? _leaf._build(&_block) : _leaf._build(_leaf, &_block)
+        if(_orig)
+          unless(_orig.is_a?(CollapseArray))
+            _orig = CollapseArray.new.push(_orig)
           end
-          orig << leaf
+          _orig << _leaf
         else
-          orig = leaf
+          _orig = _leaf
         end
       else
-        if(args.size > 1 && args.all?{|i| i.is_a?(::String) || i.is_a?(::Symbol)} && !_state(:value_collapse))
-          @table[sym] = _klass_new unless @table[sym].is_a?(_klass)
-          endpoint = args.inject(@table[sym]) do |memo, k|
-            unless(memo[k].is_a?(_klass))
-              memo._set(k, _klass_new)
+        if(_args.size > 1 && _args.all?{|_i| _i.is_a?(::String) || _i.is_a?(::Symbol)} && !_state(:value_collapse))
+          @table[_sym] = _klass_new unless @table[_sym].is_a?(_klass)
+          _endpoint = _args.inject(@table[_sym]) do |_memo, _k|
+            unless(_memo[_k].is_a?(_klass))
+              _memo._set(_k, _klass_new)
             end
-            memo[k]
+            _memo[_k]
           end
-          return endpoint # custom break out
+          return _endpoint # custom break out
         else
-          if(args.size > 1)
-            val = args.map do |v|
-              if(v.is_a?(::Hash) && _state(:hash_load_struct))
-                val = _klass_new
-                val._load(v)
+          if(_args.size > 1)
+            _val = _args.map do |_v|
+              if(_v.is_a?(::Hash) && _state(:hash_load_struct))
+                _val = _klass_new
+                _val._load(_v)
               else
-                v
+                _v
               end
             end
           else
-            if(args.first.is_a?(::Hash) && _state(:hash_load_struct))
-              val = _klass_new
-              val._load(args.first)
+            if(_args.first.is_a?(::Hash) && _state(:hash_load_struct))
+              _val = _klass_new
+              _val._load(_args.first)
             else
-              val = args.first
+              _val = _args.first
             end
           end
-          if(_state(:value_collapse) && !(leaf = @table[sym]).nil?)
-            unless(leaf.is_a?(CollapseArray))
-              leaf = CollapseArray.new.push(leaf)
+          if(_state(:value_collapse) && !(_leaf = @table[_sym]).nil?)
+            unless(_leaf.is_a?(CollapseArray))
+              _leaf = CollapseArray.new.push(_leaf)
             end
-            leaf << val
-            @table[sym] = leaf
+            _leaf << _val
+            @table[_sym] = _leaf
           else
-            @table[sym] = val
+            @table[_sym] = _val
           end
         end
       end
     end
-    @table[sym] = _klass_new if @table[sym].nil? && !@table[sym].is_a?(_klass)
-    @table[sym]
+    @table[_sym] = _klass_new if @table[_sym].nil? && !@table[_sym].is_a?(_klass)
+    @table[_sym]
   end
 
   # @return [TrueClass, FalseClass] struct is nil (empty data)
