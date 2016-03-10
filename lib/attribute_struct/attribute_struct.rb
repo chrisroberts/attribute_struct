@@ -82,6 +82,9 @@ class AttributeStruct < BasicObject
 
   end
 
+  # value used to identify unset value
+  UNSET_VALUE = :__unset__
+
   # Specialized array for collapsing values
   class CollapseArray < ::Array; end
 
@@ -177,8 +180,8 @@ class AttributeStruct < BasicObject
   # @param val [Object]
   # @yield block to execute within context
   # @return [Object]
-  def _set(key, val=nil, &block)
-    if(val)
+  def _set(key, val=UNSET_VALUE, &block)
+    if(val != UNSET_VALUE)
       self.method_missing(key, val, &block)
     else
       self.method_missing(key, &block)
@@ -201,7 +204,7 @@ class AttributeStruct < BasicObject
     sym = _process_key(sym)
     if(!args.empty? || block)
       if(args.empty? && block)
-        base = @table.fetch(sym, :__unset__)
+        base = @table.fetch(sym, UNSET_VALUE)
         if(_state(:value_collapse) && !base.is_a?(self.class!))
           orig = base
           base = _klass_new
@@ -219,7 +222,7 @@ class AttributeStruct < BasicObject
         if(orig.is_a?(::NilClass))
           @table[sym] = base
         else
-          if(orig == :__unset__)
+          if(orig == UNSET_VALUE)
             @table[sym] = base
           else
             unless(orig.is_a?(CollapseArray))
@@ -359,7 +362,7 @@ class AttributeStruct < BasicObject
         ]
       end
     elsif(item.is_a?(::AttributeStruct))
-      item.nil? ? :__unset__ : item._dump
+      item.nil? ? UNSET_VALUE : item._dump
     else
       item
     end
@@ -370,7 +373,7 @@ class AttributeStruct < BasicObject
     processed = @table.keys.map do |key|
       value = @table[key]
       val = _dump_unpacker(value)
-      [_dump_unpacker(key), val] unless val == :__unset__
+      [_dump_unpacker(key), val] unless val == UNSET_VALUE
     end.compact
     __hashish[*processed.flatten(1)]
   end
