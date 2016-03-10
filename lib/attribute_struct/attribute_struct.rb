@@ -237,7 +237,7 @@ class AttributeStruct < BasicObject
         @table[_sym] = _result
 
         _args.flatten.each do |_arg|
-          _leaf = base[_arg]
+          _leaf = _base[_arg]
           unless(_leaf.is_a?(_klass))
             _leaf = _klass_new
             _base._set(_arg, _leaf)
