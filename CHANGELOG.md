@@ -1,3 +1,6 @@
+# v0.3.4
+* Fix value overwrite when accessed via parameter and updated via block
+
 # v0.3.2
 * Update variable names within method_missing to prevent data collisions
 * Use constant for internal nil value
