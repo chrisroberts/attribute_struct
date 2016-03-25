@@ -603,7 +603,7 @@ class AttributeStruct < BasicObject
   # @param konst [Symbol, String]
   # @return [Object, NilClass]
   def _objectified_constant_lookup(konst)
-    if(::Object.const_defined?(konst))
+    if(konst.to_s[0].match(/[A-Z]/) && ::Object.const_defined?(konst))
       ::Object.const_get(konst)
     end
   end
