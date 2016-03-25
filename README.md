@@ -244,6 +244,38 @@ end.dump!
 # => {"This"=>{"Is"=>{"A"=>{"Deeply"=>{"NestedCamel"=>{"Hash"=>true}}}}},"horse" => true}
 ```
 
+### Augmented AttributeStruct
+
+An augmented version of the AttributeStruct is available that includes
+the `Kernel` module to provide many common methods. This can reduce the
+usability of the struct by defining methods that may collide with desired
+key entries. It is important to be aware of this when using the augmented
+version. To create an augmented version:
+
+```ruby
+require 'attribute_struct'
+
+AttributeStruct::Augmented.new do
+  rand_value rand
+end.dump!
+
+# => {"rand_value"=>0.7983473046826768}
+```
+
+Kernel methods can also be injected into raw AttributeStruct instance. Again,
+caution must be used to prevent unintended collisions:
+
+```ruby
+require 'attribute_struct'
+
+AttributeStruct.new do
+  kernelify!
+  rand_value rand
+end.dump!
+
+# => {"rand_value"=>0.24500702285393017}
+```
+
 ## In the wild
 
 Libraries utilizing AttributeStruct:
