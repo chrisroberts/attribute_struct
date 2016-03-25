@@ -532,6 +532,8 @@ class AttributeStruct < BasicObject
     end
     n._camel_keys = _camel_keys
     n._camel_style = _camel_style if _camel_style
+    n._objectify if objectified?
+    n._kernelify if kernelified?
     n._parent(self)
     n
   end
@@ -604,6 +606,25 @@ class AttributeStruct < BasicObject
     if(::Object.const_defined?(konst))
       ::Object.const_get(konst)
     end
+  end
+
+  # Inject Kernel methods
+  #
+  # @return [TrueClass]
+  def _kernelify
+    unless(kernelified?)
+      @_kernelified = true
+      (::Kernel.public_instance_methods + ::Kernel.private_instance_methods).each do |m_name|
+        self.instance_eval("def #{m_name}(*a, &b); ::Kernel.instance_method(:#{m_name}).bind(self).curry.call(*a, &b); end")
+      end
+    end
+    true
+  end
+  alias_method :kernelify!, :_kernelify
+
+  # @return [TrueClass, FalseClass] Kernel methods have been injected
+  def kernelified?
+    !!@_kernelified
   end
 
 end
