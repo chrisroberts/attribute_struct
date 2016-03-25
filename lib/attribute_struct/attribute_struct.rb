@@ -2,6 +2,7 @@ require 'attribute_struct'
 
 class AttributeStruct < BasicObject
 
+  autoload :Augmented, 'attribute_struct/augmented'
   autoload :Mash, 'attribute_struct/attribute_hash'
 
   class << self
@@ -105,6 +106,7 @@ class AttributeStruct < BasicObject
   def initialize(init_hash=nil, &block)
     @_camel_keys = _klass.camel_keys
     @_arg_state = __hashish.new
+    @_objectified = false
     @table = __hashish.new
     if(init_hash)
       _load(init_hash)
@@ -165,6 +167,20 @@ class AttributeStruct < BasicObject
     @_camel_style = ::AttributeStruct.validate_camel_style(val)
   end
 
+  # Enable/disable root constant lookups
+  #
+  # @param enable [TrueClass, FalseClass]
+  # @return [TrueClass, FalseClass]
+  def _objectify(enable=true)
+    @_objectified = !!enable
+  end
+  alias_method :objectify!, :_objectify
+
+  # @return [TrueClass, FalseClass]
+  def objectified?
+    @_objectified
+  end
+
   # Direct data access
   #
   # @param key [String, Symbol]
@@ -197,6 +213,10 @@ class AttributeStruct < BasicObject
   # @return [Object] existing value or newly set value
   # @note Dragons and unicorns all over in here
   def method_missing(_sym, *_args, &_block)
+    if(objectified? && _args.empty? && _block.nil?)
+      _o_lookup = _objectified_constant_lookup(_sym)
+      return _o_lookup if _o_lookup
+    end
     if((_s = _sym.to_s).end_with?('='))
       _s.slice!(-1, _s.length)
       _sym = _s
@@ -512,6 +532,8 @@ class AttributeStruct < BasicObject
     end
     n._camel_keys = _camel_keys
     n._camel_style = _camel_style if _camel_style
+    n._objectify if objectified?
+    n._kernelify if kernelified?
     n._parent(self)
     n
   end
@@ -574,6 +596,35 @@ class AttributeStruct < BasicObject
   # @return [TrueClass, FalseClass]
   def respond_to?(name)
     _klass.instance_methods.map(&:to_sym).include?(name.to_sym)
+  end
+
+  # Lookup constant in root namespace
+  #
+  # @param konst [Symbol, String]
+  # @return [Object, NilClass]
+  def _objectified_constant_lookup(konst)
+    if(konst.to_s[0].match(/[A-Z]/) && ::Object.const_defined?(konst))
+      ::Object.const_get(konst)
+    end
+  end
+
+  # Inject Kernel methods
+  #
+  # @return [TrueClass]
+  def _kernelify
+    unless(kernelified?)
+      @_kernelified = true
+      (::Kernel.public_instance_methods + ::Kernel.private_instance_methods).each do |m_name|
+        self.instance_eval("def #{m_name}(*a, &b); ::Kernel.instance_method(:#{m_name}).bind(self).curry.call(*a, &b); end")
+      end
+    end
+    true
+  end
+  alias_method :kernelify!, :_kernelify
+
+  # @return [TrueClass, FalseClass] Kernel methods have been injected
+  def kernelified?
+    !!@_kernelified
   end
 
 end
