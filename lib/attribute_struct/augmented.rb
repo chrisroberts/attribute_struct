@@ -17,5 +17,10 @@ class AttributeStruct
       @_objectified = true
     end
 
+    # @return [Class]
+    def _klass
+      ::AttributeStruct::Augmented
+    end
+
   end
 end
