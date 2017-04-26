@@ -217,11 +217,13 @@ class AttributeStruct < BasicObject
       _o_lookup = _objectified_constant_lookup(_sym)
       return _o_lookup if _o_lookup
     end
-    if((_s = _sym.to_s).end_with?('='))
-      _s.slice!(-1, _s.length)
-      _sym = _s
+    if(_sym.is_a?(::String) || _sym.is_a?(::Symbol))
+      if((_s = _sym.to_s).end_with?('='))
+        _s.slice!(-1, _s.length)
+        _sym = _s
+      end
+      _sym = _process_key(_sym)
     end
-    _sym = _process_key(_sym)
     if(!_args.empty? || _block)
       if(_args.empty? && _block)
         _base = @table.fetch(_sym, UNSET_VALUE)
@@ -492,23 +494,27 @@ class AttributeStruct < BasicObject
   # @param args [Object] argument list (:force will force processing)
   # @return [String, Symbol]
   def _process_key(key, *args)
-    key = ::CamelString.new(key.to_s)
-    if(_camel_keys && _camel_keys_action && !key._hump_format_requested?)
-      case _camel_keys_action
-      when :auto_disable
-        key._no_hump
-      when :auto_enable
-        key._hump
-      end
-    end
-    if(_camel_keys && (key._camel? || args.include?(:force)))
-      camel_args = [key]
-      if(key._hump_style || _camel_style == :no_leading)
-        unless(key._hump_style == :leading_hump)
-          camel_args << false
+    if(key.is_a?(::String) || key.is_a?(::Symbol))
+      key = ::CamelString.new(key.to_s)
+      if(_camel_keys && _camel_keys_action && !key._hump_format_requested?)
+        case _camel_keys_action
+        when :auto_disable
+          key._no_hump
+        when :auto_enable
+          key._hump
         end
       end
-      ::Bogo::Utility.camel(*camel_args)
+      if(_camel_keys && (key._camel? || args.include?(:force)))
+        camel_args = [key]
+        if(key._hump_style || _camel_style == :no_leading)
+          unless(key._hump_style == :leading_hump)
+            camel_args << false
+          end
+        end
+        ::Bogo::Utility.camel(*camel_args)
+      else
+        key
+      end
     else
       key
     end
@@ -627,6 +633,9 @@ class AttributeStruct < BasicObject
     !!@_kernelified
   end
 
+  def hash
+    ::Kernel.instance_method(:hash).bind(self).curry.call
+  end
 end
 
 require 'attribute_struct/attribute_hash'
