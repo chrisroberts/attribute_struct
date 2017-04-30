@@ -263,7 +263,30 @@ describe AttributeStruct do
       it 'should contain all values' do
         @struct._dump['fubar']['feebar']['things'].keys.sort.must_equal ['ohai', 'other', 'stuff', 'testings']
       end
+    end
 
+    describe 'non-stringish keys' do
+
+      it 'should allow using AttributeStructs as keys' do
+        result = AttributeStruct.new do
+          key = fubar do
+            feebar true
+          end
+          set!(key) do
+            foobar true
+          end
+        end._dump
+        result.keys.must_include({'feebar' => true})
+      end
+
+      it 'should allow using Array as keys' do
+        result = AttributeStruct.new do
+          set!([1,2,3]) do
+            fubar true
+          end
+        end._dump
+        result.keys.must_include [1,2,3]
+      end
     end
 
   end
