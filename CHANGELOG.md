@@ -1,3 +1,8 @@
+# v0.4.0
+* Support cloning of AttributeStruct instances
+* Allow non-Stringish types to be used for data keys
+* Include Augmented AttributeStruct to include kernelization
+
 # v0.3.4
 * Fix value overwrite when accessed via parameter and updated via block
 
