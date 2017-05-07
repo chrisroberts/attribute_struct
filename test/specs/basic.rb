@@ -263,8 +263,82 @@ describe AttributeStruct do
       it 'should contain all values' do
         @struct._dump['fubar']['feebar']['things'].keys.sort.must_equal ['ohai', 'other', 'stuff', 'testings']
       end
-
     end
 
+    describe 'non-stringish keys' do
+
+      it 'should allow using AttributeStructs as keys' do
+        result = AttributeStruct.new do
+          key = fubar do
+            feebar true
+          end
+          set!(key) do
+            foobar true
+          end
+        end._dump
+        result.keys.must_include({'feebar' => true})
+      end
+
+      it 'should allow using Array as keys' do
+        result = AttributeStruct.new do
+          set!([1,2,3]) do
+            fubar true
+          end
+        end._dump
+        result.keys.must_include [1,2,3]
+      end
+    end
+
+    describe 'instance cloning' do
+      before do
+        @struct = AttributeStruct.new do
+          fubar do
+            value1 1
+            value2 2
+            value3 do
+              value4 4
+            end
+          end
+        end
+      end
+
+      it 'should clone a new instance' do
+        cloned = @struct._clone
+        cloned.hash.wont_equal @struct.hash
+      end
+
+      it 'should not change values in original instance' do
+        cloned = @struct.fubar._clone
+        cloned.value1 10
+        inst_hash = @struct._dump
+        cloned_hash = cloned._dump
+        inst_hash.to_smash.get(:fubar, :value1).must_equal 1
+        cloned_hash.to_smash.get(:value1).must_equal 10
+      end
+
+      it 'should have the same parent' do
+        cloned = @struct.fubar._clone
+        cloned._parent.must_equal @struct._parent
+      end
+
+      it 'should have the same parent and show unchanged data' do
+        cloned = @struct.fubar._clone
+        cloned.value1 10
+        inst_hash = @struct._dump
+        cloned_hash = cloned._dump
+        inst_hash.to_smash.get(:fubar, :value1).must_equal 1
+        cloned_hash.to_smash.get(:value1).must_equal 10
+        cloned_parent_hash = cloned._parent._dump
+        cloned_parent_hash.to_smash.get(:value1).must_equal 1
+      end
+
+      it 'should allow defining a new parent' do
+        new_struct = AttributeStruct.new do
+          new_struct true
+        end
+        cloned = @struct.fubar._clone(new_struct)
+        cloned._parent._dump.to_smash.get(:new_struct).must_equal true
+      end
+    end
   end
 end

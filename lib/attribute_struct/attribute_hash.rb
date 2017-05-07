@@ -185,7 +185,10 @@ class AttributeStruct
     # @return [Hash] The mash as a Hash with symbolized keys.
     def symbolize_keys
       h = Hash.new(default)
-      each { |key, val| h[key.to_sym] = val }
+      each do |key, val|
+        key = key.to_sym if key.is_a?(String) || key.is_a?(Symbol)
+        h[key] = val
+      end
       h
     end
 
