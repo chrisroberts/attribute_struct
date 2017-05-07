@@ -525,9 +525,13 @@ class AttributeStruct < BasicObject
   def _klass
     ::AttributeStruct
   end
-  alias_method :klass!, :_klass
-  alias_method :class!, :_klass
-  alias_method :class, :_klass
+
+  # @return [Class] this clas
+  def klass!
+    _klass
+  end
+  alias_method :class!, :klass!
+  alias_method :class, :klass!
 
   # @return [AttributeStruct] new struct instance
   # @note will set self as parent and propogate camelizing status
@@ -633,9 +637,33 @@ class AttributeStruct < BasicObject
     !!@_kernelified
   end
 
+  # @return [Numeric]
   def hash
     ::Kernel.instance_method(:hash).bind(self).curry.call
   end
+
+  # @return [AttributeStruct] clone of current instance
+  def _clone(_new_parent=nil)
+    _cloned_inst = _klass_new
+    _cloned_inst.__table = __hashish[
+      @table.map{ |_key, _value|
+        if(_key.is_a?(::AttributeStruct))
+          _key = _key._clone
+        else
+          _key = _do_dup(_key)
+        end
+        if(_value.is_a?(::AttributeStruct))
+          _value = _value._clone
+        else
+          _value = _do_dup(_value)
+        end
+        [_key, _value]
+      }
+    ]
+    _cloned_inst._parent(_new_parent) if _new_parent
+    _cloned_inst
+  end
+  alias_method :clone!, :_clone
 end
 
 require 'attribute_struct/attribute_hash'
