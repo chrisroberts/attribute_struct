@@ -1,3 +1,6 @@
+# v0.4.2
+* Set cloned data via #_data on new instance
+
 # v0.4.0
 * Support cloning of AttributeStruct instances
 * Allow non-Stringish types to be used for data keys
