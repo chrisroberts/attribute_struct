@@ -645,7 +645,7 @@ class AttributeStruct < BasicObject
   # @return [AttributeStruct] clone of current instance
   def _clone(_new_parent=nil)
     _cloned_inst = _klass_new
-    _cloned_inst.__table = __hashish[
+    _cloned_inst._data.replace __hashish[
       @table.map{ |_key, _value|
         if(_key.is_a?(::AttributeStruct))
           _key = _key._clone

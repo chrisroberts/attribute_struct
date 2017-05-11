@@ -339,6 +339,14 @@ describe AttributeStruct do
         cloned = @struct.fubar._clone(new_struct)
         cloned._parent._dump.to_smash.get(:new_struct).must_equal true
       end
+
+      it 'should contain values of cloned struct' do
+        cloned = @struct.fubar._clone
+        inst_hash = @struct._dump
+        cloned_hash = cloned._dump
+        inst_hash.to_smash.get(:fubar, :value1).must_equal 1
+        cloned_hash.to_smash.get(:value1).must_equal 1
+      end
     end
   end
 end
