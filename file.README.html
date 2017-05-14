@@ -1,12 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>
   File: README
   
-    &mdash; Documentation by YARD 0.8.7.4
+    &mdash; Documentation by YARD 0.9.8
   
 </title>
 
@@ -15,9 +15,8 @@
   <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
 
 <script type="text/javascript" charset="utf-8">
-  hasFrames = window.top.frames.main ? true : false;
+  pathId = "README";
   relpath = '';
-  framesUrl = "frames.html#!file.README.html";
 </script>
 
 
@@ -28,99 +27,307 @@
 
   </head>
   <body>
-    <div id="header">
-      <div id="menu">
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
   
     <a href="_index.html">Index</a> &raquo; 
     <span class="title">File: README</span>
   
-
-  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
 </div>
 
-      <div id="search">
+        <div id="search">
   
     <a class="full_list_link" id="class_list_link"
         href="class_list.html">
-      Class List
-    </a>
-  
-    <a class="full_list_link" id="method_list_link"
-        href="method_list.html">
-      Method List
-    </a>
-  
-    <a class="full_list_link" id="file_list_link"
-        href="file_list.html">
-      File List
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
     </a>
   
 </div>
-      <div class="clear"></div>
-    </div>
+        <div class="clear"></div>
+      </div>
 
-    <iframe id="search_frame"></iframe>
+      <div id="content"><div id='filecontents'><h1>AttributeStruct</h1>
 
-    <div id="content"><div id='filecontents'><h2>AttributeStruct</h2>
+<p>AttributeStruct is a DSL helper library. It provides support for programmatic
+generation of complex data structures.</p>
 
-<p>This is a helper library that essentially builds hashes. It
-wraps hash building with a nice DSL to make it slightly cleaner,
-more robust, and provide extra features.</p>
+<h2>How it works</h2>
 
-<h2>Build Status</h2>
+<p>Under the hood, AttributeStruct makes use of Ruby&#39;s <code>BasicObject</code> class and the
+<code>#method_missing</code> method to bring a clean and concise way of generating data
+structures. Deeply nested Hashes can be built using method chaining, block
+structures, or both. Evaluation of a structure is performed top down, allowing
+access to previously set data values within the structure during evaluation.</p>
+
+<h2>Examples</h2>
+
+<h3>Setting values</h3>
+
+<h4>Method chaining</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested'>nested</span><span class='period'>.</span><span class='id identifier rubyid_hash'>hash</span> <span class='kw'>true</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;this&quot;=&gt;{&quot;is&quot;=&gt;{&quot;a&quot;=&gt;{&quot;deeply&quot;=&gt;{&quot;nested&quot;=&gt;{&quot;hash&quot;=&gt;true}}}}}}
+</span></code></pre>
+
+<h4>Block nesting</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_this'>this</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_is'>is</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_a'>a</span> <span class='kw'>do</span>
+        <span class='id identifier rubyid_deeply'>deeply</span> <span class='kw'>do</span>
+          <span class='id identifier rubyid_nested'>nested</span> <span class='kw'>do</span>
+            <span class='id identifier rubyid_hash'>hash</span> <span class='kw'>true</span>
+          <span class='kw'>end</span>
+        <span class='kw'>end</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;this&quot;=&gt;{&quot;is&quot;=&gt;{&quot;a&quot;=&gt;{&quot;deeply&quot;=&gt;{&quot;nested&quot;=&gt;{&quot;hash&quot;=&gt;true}}}}}}
+</span></code></pre>
+
+<h4>Mixed block nesting and method chaining</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested'>nested</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_hash'>hash</span> <span class='kw'>true</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;this&quot;=&gt;{&quot;is&quot;=&gt;{&quot;a&quot;=&gt;{&quot;deeply&quot;=&gt;{&quot;nested&quot;=&gt;{&quot;hash&quot;=&gt;true}}}}}}
+</span></code></pre>
+
+<h3>Structure re-entry</h3>
+
+<h4>Block re-entry</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested'>nested</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_hash'>hash</span> <span class='kw'>true</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_deeply'>deeply</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_nested'>nested</span><span class='period'>.</span><span class='id identifier rubyid_other_hash'>other_hash</span> <span class='kw'>true</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;this&quot;=&gt;{&quot;is&quot;=&gt;{&quot;a&quot;=&gt;{&quot;deeply&quot;=&gt;{&quot;nested&quot;=&gt;{&quot;hash&quot;=&gt;true,&quot;other_hash&quot;=&gt;true}}}}}}
+</span></code></pre>
+
+<h4>Method re-entry</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested'>nested</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_hash'>hash</span> <span class='kw'>true</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested'>nested</span><span class='period'>.</span><span class='id identifier rubyid_other_hash'>other_hash</span> <span class='kw'>true</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;this&quot;=&gt;{&quot;is&quot;=&gt;{&quot;a&quot;=&gt;{&quot;deeply&quot;=&gt;{&quot;nested&quot;=&gt;{&quot;hash&quot;=&gt;true,&quot;other_hash&quot;=&gt;true}}}}}}
+</span></code></pre>
+
+<h3>Data removal</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested'>nested</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_hash'>hash</span> <span class='kw'>true</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested'>nested</span><span class='period'>.</span><span class='id identifier rubyid_other_hash'>other_hash</span> <span class='kw'>true</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested'>nested</span><span class='period'>.</span><span class='id identifier rubyid_delete!'>delete!</span><span class='lparen'>(</span><span class='symbol'>:hash</span><span class='rparen'>)</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;this&quot;=&gt;{&quot;is&quot;=&gt;{&quot;a&quot;=&gt;{&quot;deeply&quot;=&gt;{&quot;nested&quot;=&gt;{&quot;other_hash&quot;=&gt;true}}}}}}
+</span></code></pre>
+
+<h3>Data Access</h3>
+
+<h4>Current data</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested'>nested</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_hash'>hash</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>my_value</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested'>nested</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_other_hash'>other_hash</span> <span class='id identifier rubyid_data!'>data!</span><span class='lbracket'>[</span><span class='symbol'>:hash</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;this&quot;=&gt;{&quot;is&quot;=&gt;{&quot;a&quot;=&gt;{&quot;deeply&quot;=&gt;{&quot;nested&quot;=&gt;{&quot;hash&quot;=&gt;&quot;my_value&quot;,&quot;other_hash&quot;=&gt;&quot;my_value&quot;}}}}}}
+</span></code></pre>
+
+<h4>Current data keys</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested'>nested</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_hash'>hash</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>my_value</span><span class='tstring_end'>&#39;</span></span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested'>nested</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_other_hash'>other_hash</span> <span class='id identifier rubyid_keys!'>keys!</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;this&quot;=&gt;{&quot;is&quot;=&gt;{&quot;a&quot;=&gt;{&quot;deeply&quot;=&gt;{&quot;nested&quot;=&gt;{&quot;hash&quot;=&gt;&quot;my_value&quot;,&quot;other_hash&quot;=&gt;[&quot;hash&quot;]}}}}}}
+</span></code></pre>
+
+<h3>Hierarchy access</h3>
+
+<h4>Parent structure</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_deeply'>deeply</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_state'>state</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>sunny</span><span class='tstring_end'>&#39;</span></span>
+      <span class='id identifier rubyid_nested'>nested</span> <span class='kw'>do</span>
+        <span class='id identifier rubyid_hash'>hash</span> <span class='id identifier rubyid_parent!'>parent!</span><span class='period'>.</span><span class='id identifier rubyid_state'>state</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;this&quot;=&gt;{&quot;is&quot;=&gt;{&quot;a&quot;=&gt;{&quot;deeply&quot;=&gt;{&quot;state&quot;=&gt;&quot;sunny&quot;, &quot;nested&quot;=&gt;{&quot;hash&quot;=&gt;&quot;sunny&quot;}}}}}}
+</span></code></pre>
+
+<h4>Root structure</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_deeply'>deeply</span> <span class='kw'>do</span>
+      <span class='id identifier rubyid_state'>state</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>sunny</span><span class='tstring_end'>&#39;</span></span>
+      <span class='id identifier rubyid_nested'>nested</span> <span class='kw'>do</span>
+        <span class='id identifier rubyid_hash'>hash</span> <span class='id identifier rubyid_root!'>root!</span><span class='period'>.</span><span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_state'>state</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;this&quot;=&gt;{&quot;is&quot;=&gt;{&quot;a&quot;=&gt;{&quot;deeply&quot;=&gt;{&quot;state&quot;=&gt;&quot;sunny&quot;, &quot;nested&quot;=&gt;{&quot;hash&quot;=&gt;&quot;sunny&quot;}}}}}}
+</span></code></pre>
+
+<h3>Camel case</h3>
+
+<h4>Camel case keys</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid__camel_keys'>_camel_keys</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested_camel'>nested_camel</span><span class='period'>.</span><span class='id identifier rubyid_hash'>hash</span> <span class='kw'>true</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;This&quot;=&gt;{&quot;Is&quot;=&gt;{&quot;A&quot;=&gt;{&quot;Deeply&quot;=&gt;{&quot;NestedCamel&quot;=&gt;{&quot;Hash&quot;=&gt;true}}}}}}
+</span></code></pre>
+
+<h4>Camel case with lead lower</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid__camel_keys'>_camel_keys</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid__camel_style'>_camel_style</span> <span class='op'>=</span> <span class='symbol'>:no_leading</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested_camel'>nested_camel</span><span class='period'>.</span><span class='id identifier rubyid_hash'>hash</span> <span class='kw'>true</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;this&quot;=&gt;{&quot;is&quot;=&gt;{&quot;a&quot;=&gt;{&quot;deeply&quot;=&gt;{&quot;nestedCamel&quot;=&gt;{&quot;hash&quot;=&gt;true}}}}}}
+</span></code></pre>
+
+<h4>Disable camel on individual key</h4>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid__camel_keys'>_camel_keys</span> <span class='op'>=</span> <span class='kw'>true</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_is'>is</span><span class='period'>.</span><span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_deeply'>deeply</span><span class='period'>.</span><span class='id identifier rubyid_nested_camel'>nested_camel</span><span class='period'>.</span><span class='id identifier rubyid_hash'>hash</span> <span class='kw'>true</span>
+  <span class='id identifier rubyid_this'>this</span><span class='period'>.</span><span class='id identifier rubyid_set!'>set!</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>horse</span><span class='tstring_end'>&#39;</span></span><span class='period'>.</span><span class='id identifier rubyid_no_hump!'>no_hump!</span><span class='comma'>,</span> <span class='kw'>true</span><span class='rparen'>)</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;This&quot;=&gt;{&quot;Is&quot;=&gt;{&quot;A&quot;=&gt;{&quot;Deeply&quot;=&gt;{&quot;NestedCamel&quot;=&gt;{&quot;Hash&quot;=&gt;true}}}}},&quot;horse&quot; =&gt; true}
+</span></code></pre>
+
+<h3>Augmented AttributeStruct</h3>
+
+<p>An augmented version of the AttributeStruct is available that includes
+the <code>Kernel</code> module to provide many common methods. This can reduce the
+usability of the struct by defining methods that may collide with desired
+key entries. It is important to be aware of this when using the augmented
+version. To create an augmented version:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="AttributeStruct/Augmented.html" title="AttributeStruct::Augmented (class)">Augmented</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct/Augmented.html#initialize-instance_method" title="AttributeStruct::Augmented#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_rand_value'>rand_value</span> <span class='id identifier rubyid_rand'>rand</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;rand_value&quot;=&gt;0.7983473046826768}
+</span></code></pre>
+
+<p>Kernel methods can also be injected into raw AttributeStruct instance. Again,
+caution must be used to prevent unintended collisions:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>&#39;</span></span>
+
+<span class='const'><span class='object_link'><a href="AttributeStruct.html" title="AttributeStruct (class)">AttributeStruct</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="AttributeStruct.html#initialize-instance_method" title="AttributeStruct#initialize (method)">new</a></span></span> <span class='kw'>do</span>
+  <span class='id identifier rubyid_kernelify!'>kernelify!</span>
+  <span class='id identifier rubyid_rand_value'>rand_value</span> <span class='id identifier rubyid_rand'>rand</span>
+<span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_dump!'>dump!</span>
+
+<span class='comment'># =&gt; {&quot;rand_value&quot;=&gt;0.24500702285393017}
+</span></code></pre>
+
+<h2>In the wild</h2>
+
+<p>Libraries utilizing AttributeStruct:</p>
 
 <ul>
-<li><a href="https://travis-ci.org/chrisroberts/attribute_struct"><img src="https://api.travis-ci.org/chrisroberts/attribute_struct.png" alt="Build Status"></a></li>
+<li>SparkleFormation: <a href="http://www.sparkleformation.io">http://www.sparkleformation.io</a></li>
+<li>Bogo Config: <a href="https://github.com/spox/bogo-config">https://github.com/spox/bogo-config</a></li>
 </ul>
-
-<h3>Usage</h3>
-
-<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>attribute_struct</span><span class='tstring_end'>'</span></span>
-
-<span class='id identifier rubyid_struct'>struct</span> <span class='op'>=</span> <span class='const'>AttributeStruct</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span>
-<span class='id identifier rubyid_struct'>struct</span><span class='period'>.</span><span class='id identifier rubyid_settings'>settings</span> <span class='kw'>do</span>
-  <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_admin'>admin</span> <span class='kw'>do</span>
-    <span class='id identifier rubyid_enabled'>enabled</span> <span class='kw'>true</span>
-    <span class='id identifier rubyid_port'>port</span> <span class='int'>8080</span>
-    <span class='id identifier rubyid_bind'>bind</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>*</span><span class='tstring_end'>'</span></span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_ui'>ui</span><span class='period'>.</span><span class='id identifier rubyid_public'>public</span> <span class='kw'>do</span>
-    <span class='id identifier rubyid_enabled'>enabled</span> <span class='kw'>true</span>
-    <span class='id identifier rubyid_port'>port</span> <span class='int'>80</span>
-    <span class='id identifier rubyid_bind'>bind</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>*</span><span class='tstring_end'>'</span></span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_client'>client</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>general</span><span class='tstring_end'>'</span></span><span class='rparen'>)</span> <span class='kw'>do</span>
-    <span class='id identifier rubyid_enabled'>enabled</span> <span class='kw'>false</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span>
-</code></pre>
-
-<p>Now we have an attribute structure that we can
-query and modify. To force it to a hash, we
-can simply dump it:</p>
-
-<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>'</span><span class='tstring_content'>pp</span><span class='tstring_end'>'</span></span>
-
-<span class='id identifier rubyid_pp'>pp</span> <span class='id identifier rubyid_struct'>struct</span><span class='period'>.</span><span class='id identifier rubyid__dump'>_dump</span>
-</code></pre>
-
-<p>which gives:</p>
-
-<pre class="code ruby"><code class="ruby"><span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>settings</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span>
-  <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ui</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span>
-    <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>admin</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>enabled</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='kw'>true</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>port</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='int'>8080</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bind</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='comma'>,</span>
-     <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>public</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>enabled</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='kw'>true</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>port</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='int'>80</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bind</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='rbrace'>}</span><span class='comma'>,</span>
-   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>client</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>general</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>enabled</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='kw'>false</span><span class='rbrace'>}</span><span class='rbrace'>}</span><span class='rbrace'>}</span><span class='rbrace'>}</span>
-</code></pre>
-
-<h3>IRB</h3>
-
-<p>IRB expects some things to be around like <code>#inspect</code> and <code>#to_s</code>. Before
-using <code>AttributeStruct</code> in IRB, enable compat mode:</p>
-
-<pre class="code ruby"><code class="ruby">&gt; require 'attribute_struct'
-&gt; AttributeStruct.irb_compat!
-</code></pre>
 
 <h2>Information</h2>
 
@@ -129,11 +336,12 @@ using <code>AttributeStruct</code> in IRB, enable compat mode:</p>
 </ul>
 </div></div>
 
-    <div id="footer">
-  Generated on Wed May 28 08:29:09 2014 by
+      <div id="footer">
+  Generated on Sun May 14 06:41:58 2017 by
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.8.7.4 (ruby-1.9.3).
+  0.9.8 (ruby-2.2.3).
 </div>
 
+    </div>
   </body>
 </html>
