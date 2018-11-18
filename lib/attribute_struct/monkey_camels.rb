@@ -1,13 +1,10 @@
-require 'attribute_struct'
+require "attribute_struct"
 
-unless(defined?(MonkeyCamels))
-
+unless (defined?(MonkeyCamels))
   module MonkeyCamels
-
     class << self
       def included(klass)
         klass.class_eval do
-
           include Humps
 
           alias_method :un_camel_to_s, :to_s
@@ -21,9 +18,9 @@ unless(defined?(MonkeyCamels))
     # Create a camel copy based on settings
     #
     # @return [String]
-    def camel_initialize_copy(orig, hump=nil)
+    def camel_initialize_copy(orig, hump = nil)
       new_val = un_camel_initialize_copy(orig)
-      if(hump.nil?)
+      if (hump.nil?)
         orig._camel? ? new_val : new_val._no_hump
       else
         new_val._no_hump if hump == false
@@ -55,6 +52,7 @@ unless(defined?(MonkeyCamels))
         @__not_camel = true
         self
       end
+
       alias_method :disable_camel!, :_no_hump
 
       # @return [self] enable camelizing
@@ -62,12 +60,14 @@ unless(defined?(MonkeyCamels))
         @__not_camel = false
         self
       end
+
       alias_method :camel!, :_hump
 
       # @return [Symbol, NilClass] style of hump
       def _hump_style
         @__hump_style
       end
+
       alias_method :hump_style!, :_hump_style
 
       # Set hump style to non-leading upcase
@@ -78,6 +78,7 @@ unless(defined?(MonkeyCamels))
         @__hump_style = :no_leading_hump
         self
       end
+
       alias_method :bactrian!, :_bactrian
       alias_method :no_leading_hump!, :_bactrian
 
@@ -89,11 +90,10 @@ unless(defined?(MonkeyCamels))
         @__hump_style = :leading_hump
         self
       end
+
       alias_method :dromedary!, :_dromedary
       alias_method :leading_hump!, :_dromedary
-
     end
-
   end
 
   # Force some monkeys around
@@ -102,13 +102,12 @@ unless(defined?(MonkeyCamels))
 
   # Specialized String type
   class CamelString < String
-    def initialize(val=nil)
+    def initialize(val = nil)
       super
-      if(val.respond_to?(:_camel?))
+      if (val.respond_to?(:_camel?))
         _no_hump unless val._camel?
         @__hump_style = val._hump_style
       end
     end
   end
-
 end

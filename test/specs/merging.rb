@@ -1,7 +1,7 @@
-require 'minitest/autorun'
+require "minitest/autorun"
 
 describe AttributeStruct do
-  describe 'Merging usage' do
+  describe "Merging usage" do
     before do
       @struct1 = AttributeStruct.new do
         value1 true
@@ -17,25 +17,25 @@ describe AttributeStruct do
       end
     end
 
-    describe 'new struct from merge' do
+    describe "new struct from merge" do
       before do
         @struct = @struct1._merge(@struct2)._dump
       end
 
-      it 'should have correct value for value1' do
-        @struct['value1'].must_equal true
+      it "should have correct value for value1" do
+        @struct["value1"].must_equal true
       end
 
-      it 'should have correct value for squashing' do
-        @struct['value2']['squashing'].must_equal true
+      it "should have correct value for squashing" do
+        @struct["value2"]["squashing"].must_equal true
       end
 
-      it 'should have correct value for nesting' do
-        @struct['value2']['nesting'].must_equal false
+      it "should have correct value for nesting" do
+        @struct["value2"]["nesting"].must_equal false
       end
     end
 
-    describe 'update struct from merge' do
+    describe "update struct from merge" do
       before do
         @struct = AttributeStruct.new do
           test_value true
@@ -44,12 +44,12 @@ describe AttributeStruct do
         @struct = @struct._dump
       end
 
-      it 'should contain test_value' do
-        @struct['test_value'].must_equal true
+      it "should contain test_value" do
+        @struct["test_value"].must_equal true
       end
 
-      it 'should contain value1' do
-        @struct['value1'].must_equal true
+      it "should contain value1" do
+        @struct["value1"].must_equal true
       end
     end
   end

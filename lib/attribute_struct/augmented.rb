@@ -1,10 +1,9 @@
-require 'attribute_struct'
+require "attribute_struct"
 
 class AttributeStruct
   # AttributeStruct expanded class that include the Kernel module
   # and automatically objectifies the instance
   class Augmented < ::AttributeStruct
-
     include ::Kernel
 
     # Create a new Augmented AttributeStruct instance. Passes arguments
@@ -21,6 +20,5 @@ class AttributeStruct
     def _klass
       ::AttributeStruct::Augmented
     end
-
   end
 end

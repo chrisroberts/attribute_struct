@@ -1,4 +1,4 @@
-require 'attribute_struct'
+require "attribute_struct"
 
 class AttributeStruct
 
@@ -75,7 +75,7 @@ class AttributeStruct
     def initialize_copy(orig)
       super
       # Handle nested values
-      each do |k,v|
+      each do |k, v|
         if v.kind_of?(Mash) || v.is_a?(Array)
           self[k] = v.dup
         end
@@ -150,7 +150,7 @@ class AttributeStruct
     #
     # @return [Array] The values at each of the provided keys
     def values_at(*indices)
-      indices.collect {|key| self[convert_key(key)]}
+      indices.collect { |key| self[convert_key(key)] }
     end
 
     # @param hash<Hash> The hash to merge with the mash.
@@ -174,7 +174,7 @@ class AttributeStruct
     #   { :one => 1, :two => 2, :three => 3 }.except(:one)
     #     #=> { "two" => 2, "three" => 3 }
     def except(*keys)
-      super(*keys.map {|k| convert_key(k)})
+      super(*keys.map { |k| convert_key(k) })
     end
 
     # Used to provide the same interface as Hash.
@@ -206,6 +206,7 @@ class AttributeStruct
     end
 
     protected
+
     # @param key<Object> The key to convert.
     #
     # @param [Object]
@@ -242,12 +243,12 @@ class AttributeStruct
     #
     # @return [AttributeStruct::Mash] merged hash
     def deep_merge(hash)
-      unless(hash.is_a?(Hash))
+      unless (hash.is_a?(Hash))
         raise ArgumentError.new "Expecting `Hash` type. Received: `#{hash.class}`"
       end
       new_self = self.dup
-      hash.each do |k,v|
-        if(new_self[k].is_a?(Hash) && v.is_a?(Hash))
+      hash.each do |k, v|
+        if (new_self[k].is_a?(Hash) && v.is_a?(Hash))
           new_self[k] = new_self[k].deep_merge(v)
         else
           new_self[k] = v
@@ -263,7 +264,6 @@ class AttributeStruct
       self.replace(self.deep_merge(hash))
       self
     end
-
   end
 
   AttributeHash = Mash

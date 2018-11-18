@@ -10,5 +10,4 @@ module IrbCompat
   def to_s
     "<#{self._klass}:#{@table.object_id}>"
   end
-
 end

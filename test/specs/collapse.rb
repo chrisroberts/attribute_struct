@@ -1,10 +1,9 @@
-require 'minitest/autorun'
+require "minitest/autorun"
 
 describe AttributeStruct do
-  describe 'Collapse' do
-    describe 'direct value set' do
-
-      describe 'When values are not collapsed' do
+  describe "Collapse" do
+    describe "direct value set" do
+      describe "When values are not collapsed" do
         before do
           @struct = AttributeStruct.new
           @struct.direct.assignment 1
@@ -12,12 +11,12 @@ describe AttributeStruct do
           @dump = @struct._dump
         end
 
-        it 'should return last set value' do
-          @dump['direct']['assignment'].must_equal 2
+        it "should return last set value" do
+          @dump["direct"]["assignment"].must_equal 2
         end
       end
 
-      describe 'When values are collapsed' do
+      describe "When values are collapsed" do
         before do
           @struct = AttributeStruct.new
           @struct._set_state(:value_collapse => true)
@@ -26,16 +25,14 @@ describe AttributeStruct do
           @dump = @struct._dump
         end
 
-        it 'should return both assigned values as an array' do
-          @dump['direct']['assignment'].must_equal [1,2]
+        it "should return both assigned values as an array" do
+          @dump["direct"]["assignment"].must_equal [1, 2]
         end
       end
-
     end
 
-    describe 'block value set' do
-
-      describe 'When values are not collapsed' do
+    describe "block value set" do
+      describe "When values are not collapsed" do
         before do
           @struct = AttributeStruct.new
           @struct.direct do
@@ -47,13 +44,12 @@ describe AttributeStruct do
           @dump = @struct._dump
         end
 
-        it 'should return last set value' do
-          @dump['direct']['assignment'].must_equal false
+        it "should return last set value" do
+          @dump["direct"]["assignment"].must_equal false
         end
-
       end
 
-      describe 'When values are collapsed' do
+      describe "When values are collapsed" do
         before do
           @struct = AttributeStruct.new
           @struct._set_state(:value_collapse => true)
@@ -66,12 +62,10 @@ describe AttributeStruct do
           @dump = @struct._dump
         end
 
-        it 'should return both assigned values as an array' do
-          @dump['direct']['assignment'].must_equal [true, false]
+        it "should return both assigned values as an array" do
+          @dump["direct"]["assignment"].must_equal [true, false]
         end
-
       end
-
     end
   end
 end

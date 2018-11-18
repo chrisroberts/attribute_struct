@@ -1,9 +1,8 @@
-require 'attribute_struct'
+require "attribute_struct"
 
 class AttributeStruct < BasicObject
-
-  autoload :Augmented, 'attribute_struct/augmented'
-  autoload :Mash, 'attribute_struct/attribute_hash'
+  autoload :Augmented, "attribute_struct/augmented"
+  autoload :Mash, "attribute_struct/attribute_hash"
 
   class << self
 
@@ -14,7 +13,7 @@ class AttributeStruct < BasicObject
       :no_leading => :no_leading,
       :dromedary => :leading,
       :leading_hump => :leading,
-      :leading => :leading
+      :leading => :leading,
     }
 
     # @return [Truthy, Falsey] global flag for camel keys
@@ -46,17 +45,19 @@ class AttributeStruct < BasicObject
     # @return [Symbol]
     # @raises [ArgumentError]
     def validate_camel_style(style)
-      if(VALID_CAMEL_STYLES.has_key?(style))
+      if (VALID_CAMEL_STYLES.has_key?(style))
         VALID_CAMEL_STYLES[style]
       else
-        raise ArgumentError.new "Unsupported camel style provided `#{style.inspect}`! (Allowed: #{VALID_CAMEL_STYLES.keys(&:inspect).join(', ')})"
+        valid_types = VALID_CAMEL_STYLES.keys(&:inspect).join(", ")
+        raise ArgumentError.new "Unsupported camel style provided " \
+                                "`#{style.inspect}`! (Allowed: #{valid_types})"
       end
     end
 
     # Loads helpers for camel casing
     def load_the_camels
-      unless(@camels_loaded)
-        require 'attribute_struct/monkey_camels'
+      unless (@camels_loaded)
+        require "attribute_struct/monkey_camels"
         @camels_loaded = true
       end
     end
@@ -68,7 +69,7 @@ class AttributeStruct < BasicObject
 
     # Create AttributeStruct instance and dump the resulting hash
     def build(&block)
-      raise ArgumentError.new 'Block required for build!' unless block
+      raise ArgumentError.new "Block required for build!" unless block
       new(&block)._dump
     end
 
@@ -80,7 +81,6 @@ class AttributeStruct < BasicObject
       self.send(:include, IrbCompat)
       true
     end
-
   end
 
   # value used to identify unset value
@@ -103,15 +103,15 @@ class AttributeStruct < BasicObject
   #
   # @param init_hash [Hash] hash to initialize struct
   # @yield block to execute within struct context
-  def initialize(init_hash=nil, &block)
+  def initialize(init_hash = nil, &block)
     @_camel_keys = _klass.camel_keys
     @_arg_state = __hashish.new
     @_objectified = false
     @table = __hashish.new
-    if(init_hash)
+    if (init_hash)
       _load(init_hash)
     end
-    if(block)
+    if (block)
       self.instance_exec(&block)
     end
   end
@@ -123,15 +123,17 @@ class AttributeStruct < BasicObject
   def _build(&block)
     self.instance_exec(&block)
   end
+
   alias_method :build!, :_build
 
   # Set state into current context
   #
   # @param args [Hashish] hashish type holding data for context
   # @return [Hashish]
-  def _set_state(args={})
+  def _set_state(args = {})
     _arg_state.merge!(args)
   end
+
   alias_method :set_state!, :_set_state
 
   # Value of requested state
@@ -139,15 +141,16 @@ class AttributeStruct < BasicObject
   # @param key [Symbol, String]
   # @param traverse [TrueClass, FalseClass] traverse towards root for matching key
   # @return [Object, NilClass]
-  def _state(key, traverse=true)
-    if(_arg_state.has_key?(key))
+  def _state(key, traverse = true)
+    if (_arg_state.has_key?(key))
       _arg_state[key]
     else
-      if(traverse && _parent)
+      if (traverse && _parent)
         _parent._state(key)
       end
     end
   end
+
   alias_method :state!, :_state
 
   # Enable/disable camel keys
@@ -171,9 +174,10 @@ class AttributeStruct < BasicObject
   #
   # @param enable [TrueClass, FalseClass]
   # @return [TrueClass, FalseClass]
-  def _objectify(enable=true)
+  def _objectify(enable = true)
     @_objectified = !!enable
   end
+
   alias_method :objectify!, :_objectify
 
   # @return [TrueClass, FalseClass]
@@ -196,13 +200,14 @@ class AttributeStruct < BasicObject
   # @param val [Object]
   # @yield block to execute within context
   # @return [Object]
-  def _set(key, val=UNSET_VALUE, &block)
-    if(val != UNSET_VALUE)
+  def _set(key, val = UNSET_VALUE, &block)
+    if (val != UNSET_VALUE)
       self.method_missing(key, val, &block)
     else
       self.method_missing(key, &block)
     end
   end
+
   alias_method :set!, :_set
 
   # Provides struct DSL behavior
@@ -213,66 +218,66 @@ class AttributeStruct < BasicObject
   # @return [Object] existing value or newly set value
   # @note Dragons and unicorns all over in here
   def method_missing(_sym, *_args, &_block)
-    if(objectified? && _args.empty? && _block.nil?)
+    if (objectified? && _args.empty? && _block.nil?)
       _o_lookup = _objectified_constant_lookup(_sym)
       return _o_lookup if _o_lookup
     end
-    if(_sym.is_a?(::String) || _sym.is_a?(::Symbol))
-      if((_s = _sym.to_s).end_with?('='))
+    if (_sym.is_a?(::String) || _sym.is_a?(::Symbol))
+      if ((_s = _sym.to_s).end_with?("="))
         _s.slice!(-1, _s.length)
         _sym = _s
       end
       _sym = _process_key(_sym)
     end
-    if(!_args.empty? || _block)
-      if(_args.empty? && _block)
+    if (!_args.empty? || _block)
+      if (_args.empty? && _block)
         _base = @table.fetch(_sym, UNSET_VALUE)
-        if(_state(:value_collapse) && !_base.is_a?(self.class!))
+        if (_state(:value_collapse) && !_base.is_a?(self.class!))
           _orig = _base
           _base = _klass_new
         else
-          unless(_base.is_a?(self.class!))
+          unless (_base.is_a?(self.class!))
             _base = _klass_new
           end
         end
         @table[_sym] = _base
-        if(_block.arity == 0)
+        if (_block.arity == 0)
           _base.instance_exec(&_block)
         else
           _base.instance_exec(_base, &_block)
         end
-        if(_orig.is_a?(::NilClass))
+        if (_orig.is_a?(::NilClass))
           @table[_sym] = _base
         else
-          if(_orig == UNSET_VALUE)
+          if (_orig == UNSET_VALUE)
             @table[_sym] = _base
           else
-            unless(_orig.is_a?(CollapseArray))
+            unless (_orig.is_a?(CollapseArray))
               _orig = CollapseArray.new.push(_orig)
             end
             _orig << _base
             @table[_sym] = _orig
           end
         end
-      elsif(!_args.empty? && _block)
+      elsif (!_args.empty? && _block)
         _result = _leaf = _base = @table.fetch(_sym, _klass_new)
         @table[_sym] = _result
 
         _args.flatten.each do |_arg|
           _leaf = _base[_arg]
-          unless(_leaf.is_a?(_klass))
+          unless (_leaf.is_a?(_klass))
             _leaf = _klass_new
             _base._set(_arg, _leaf)
             _base = _leaf
           end
         end
-        if(!_leaf.nil? && _state(:value_collapse))
+        if (!_leaf.nil? && _state(:value_collapse))
           _orig = _leaf
           _leaf = _orig.parent._klass_new
         end
         _block.arity == 0 ? _leaf._build(&_block) : _leaf._build(_leaf, &_block)
-        if(_orig)
-          unless(_orig.is_a?(CollapseArray))
+        if (_orig)
+          unless (_orig.is_a?(CollapseArray))
             _orig = CollapseArray.new.push(_orig)
           end
           _orig << _leaf
@@ -280,19 +285,19 @@ class AttributeStruct < BasicObject
           _orig = _leaf
         end
       else
-        if(_args.size > 1 && _args.all?{|_i| _i.is_a?(::String) || _i.is_a?(::Symbol)} && !_state(:value_collapse))
+        if (_args.size > 1 && _args.all? { |_i| _i.is_a?(::String) || _i.is_a?(::Symbol) } && !_state(:value_collapse))
           @table[_sym] = _klass_new unless @table[_sym].is_a?(_klass)
           _endpoint = _args.inject(@table[_sym]) do |_memo, _k|
-            unless(_memo[_k].is_a?(_klass))
+            unless (_memo[_k].is_a?(_klass))
               _memo._set(_k, _klass_new)
             end
             _memo[_k]
           end
           return _endpoint # custom break out
         else
-          if(_args.size > 1)
+          if (_args.size > 1)
             _val = _args.map do |_v|
-              if(_v.is_a?(::Hash) && _state(:hash_load_struct))
+              if (_v.is_a?(::Hash) && _state(:hash_load_struct))
                 _val = _klass_new
                 _val._load(_v)
               else
@@ -300,15 +305,15 @@ class AttributeStruct < BasicObject
               end
             end
           else
-            if(_args.first.is_a?(::Hash) && _state(:hash_load_struct))
+            if (_args.first.is_a?(::Hash) && _state(:hash_load_struct))
               _val = _klass_new
               _val._load(_args.first)
             else
               _val = _args.first
             end
           end
-          if(_state(:value_collapse) && !(_leaf = @table[_sym]).nil?)
-            unless(_leaf.is_a?(CollapseArray))
+          if (_state(:value_collapse) && !(_leaf = @table[_sym]).nil?)
+            unless (_leaf.is_a?(CollapseArray))
               _leaf = CollapseArray.new.push(_leaf)
             end
             _leaf << _val
@@ -340,18 +345,31 @@ class AttributeStruct < BasicObject
   def is_a?(klass)
     (_klass.ancestors + [::AttributeStruct]).include?(klass)
   end
+
   alias_method :kind_of?, :is_a?
+
+  # Check if key exists within struct
+  #
+  # @param key [String, Symbol]
+  # @return [TrueClass, FalseClass]
+  def key?(key)
+    self._keys.include?(_process_key(key))
+  end
+
+  alias_method :has_key?, :key?
 
   # @return [Array<String,Symbol>] keys within struct
   def _keys
     _data.keys
   end
+
   alias_method :keys!, :_keys
 
   # @return [AttributeStruct::AttributeHash, Mash] underlying struct data
   def _data
     @table
   end
+
   alias_method :data!, :_data
 
   # Delete entry from struct
@@ -361,6 +379,7 @@ class AttributeStruct < BasicObject
   def _delete(key)
     _data.delete(_process_key(key))
   end
+
   alias_method :delete!, :_delete
 
   # Process and unpack items for dumping within deeply nested
@@ -369,8 +388,8 @@ class AttributeStruct < BasicObject
   # @param item [Object]
   # @return [Object]
   def _dump_unpacker(item)
-    if(item.is_a?(::Enumerable))
-      if(item.respond_to?(:keys))
+    if (item.is_a?(::Enumerable))
+      if (item.respond_to?(:keys))
         item.class[
           *item.map do |entry|
             _dump_unpacker(entry)
@@ -383,7 +402,7 @@ class AttributeStruct < BasicObject
           end
         ]
       end
-    elsif(item.is_a?(::AttributeStruct))
+    elsif (item.is_a?(::AttributeStruct))
       item.nil? ? UNSET_VALUE : item._dump
     else
       item
@@ -399,6 +418,7 @@ class AttributeStruct < BasicObject
     end.compact
     __hashish[*processed.flatten(1)]
   end
+
   alias_method :dump!, :_dump
 
   # Clear current struct data and replace
@@ -407,22 +427,22 @@ class AttributeStruct < BasicObject
   # @return [self]
   def _load(hashish)
     @table.clear
-    if(_root._camel_keys_action == :auto_discovery)
-      starts = hashish.keys.map{|k|k[0,1]}
-      unless(starts.detect{|k| k =~ /[A-Z]/})
+    if (_root._camel_keys_action == :auto_discovery)
+      starts = hashish.keys.map { |k| k[0, 1] }
+      unless (starts.detect { |k| k =~ /[A-Z]/ })
         _camel_keys_set(:auto_disable)
       else
         _camel_keys_set(:auto_enable) unless _parent.nil?
       end
     end
     hashish.each do |key, value|
-      if(value.is_a?(::Enumerable))
+      if (value.is_a?(::Enumerable))
         flat = value.map do |v|
           v.is_a?(::Hash) ? _klass_new(v) : v
         end
         value = value.is_a?(::Hash) ? __hashish[*flat.flatten(1)] : flat
       end
-      if(value.is_a?(::Hash))
+      if (value.is_a?(::Hash))
         self._set(key)._load(value)
       else
         self._set(key, value)
@@ -430,6 +450,7 @@ class AttributeStruct < BasicObject
     end
     self
   end
+
   alias_method :load!, :_load
 
   # Perform deep merge
@@ -475,14 +496,14 @@ class AttributeStruct < BasicObject
   #
   # @param thing [Object] struct to copy. defaults to self
   # @return [Object] new instance
-  def _deep_copy(thing=nil)
+  def _deep_copy(thing = nil)
     thing ||= _dump
-    if(thing.is_a?(::Enumerable))
-      val = thing.map{|v| v.is_a?(::Enumerable) ? _deep_copy(v) : _do_dup(v) }
+    if (thing.is_a?(::Enumerable))
+      val = thing.map { |v| v.is_a?(::Enumerable) ? _deep_copy(v) : _do_dup(v) }
     else
       val = _do_dup(thing)
     end
-    if(thing.is_a?(::Hash))
+    if (thing.is_a?(::Hash))
       val = __hashish[*val.flatten(1)]
     end
     val
@@ -494,9 +515,9 @@ class AttributeStruct < BasicObject
   # @param args [Object] argument list (:force will force processing)
   # @return [String, Symbol]
   def _process_key(key, *args)
-    if(key.is_a?(::String) || key.is_a?(::Symbol))
+    if (key.is_a?(::String) || key.is_a?(::Symbol))
       key = ::CamelString.new(key.to_s)
-      if(_camel_keys && _camel_keys_action && !key._hump_format_requested?)
+      if (_camel_keys && _camel_keys_action && !key._hump_format_requested?)
         case _camel_keys_action
         when :auto_disable
           key._no_hump
@@ -504,10 +525,10 @@ class AttributeStruct < BasicObject
           key._hump
         end
       end
-      if(_camel_keys && (key._camel? || args.include?(:force)))
+      if (_camel_keys && (key._camel? || args.include?(:force)))
         camel_args = [key]
-        if(key._hump_style || _camel_style == :no_leading)
-          unless(key._hump_style == :leading_hump)
+        if (key._hump_style || _camel_style == :no_leading)
+          unless (key._hump_style == :leading_hump)
             camel_args << false
           end
         end
@@ -519,6 +540,7 @@ class AttributeStruct < BasicObject
       key
     end
   end
+
   alias_method :process_key!, :_process_key
 
   # @return [Class] this class
@@ -530,6 +552,7 @@ class AttributeStruct < BasicObject
   def klass!
     _klass
   end
+
   alias_method :class!, :klass!
   alias_method :class, :klass!
 
@@ -537,7 +560,7 @@ class AttributeStruct < BasicObject
   # @note will set self as parent and propogate camelizing status
   def _klass_new(*args, &block)
     n = _klass.new(*args, &block)
-    unless(_camel_keys_action == :auto_discovery)
+    unless (_camel_keys_action == :auto_discovery)
       n._camel_keys_set(_camel_keys_action)
     end
     n._camel_keys = _camel_keys
@@ -555,6 +578,7 @@ class AttributeStruct < BasicObject
   def _camel_keys_set(v)
     @_camel_keys_set = v
   end
+
   alias_method :camel_keys_set!, :_camel_keys_set
 
   # @return [Symbol, NilClass] :auto_disable or :auto_enable
@@ -563,20 +587,22 @@ class AttributeStruct < BasicObject
   end
 
   # @return [AttributeStruct, NilClass] parent of this struct
-  def _parent(obj=nil)
+  def _parent(obj = nil)
     @_parent = obj if obj
     @_parent
   end
+
   alias_method :parent!, :_parent
 
   # @return [AttributeStruct, NilClass] root of the struct or nil if self is root
   def _root
     r = self
-    until(r._parent == nil)
+    until (r._parent == nil)
       r = r._parent
     end
     r
   end
+
   alias_method :root!, :_root
 
   # Create an Array and evaluate discovered AttributeStructs
@@ -585,9 +611,9 @@ class AttributeStruct < BasicObject
   # @return [Array]
   def _array(*args)
     args.map do |maybe_block|
-      if(maybe_block.is_a?(::Proc))
+      if (maybe_block.is_a?(::Proc))
         klass = _klass_new
-        if(maybe_block.arity > 0)
+        if (maybe_block.arity > 0)
           klass.instance_exec(klass, &maybe_block)
         else
           klass.instance_exec(&maybe_block)
@@ -598,6 +624,7 @@ class AttributeStruct < BasicObject
       end
     end
   end
+
   alias_method :array!, :_array
 
   # Instance responds to method name
@@ -613,7 +640,7 @@ class AttributeStruct < BasicObject
   # @param konst [Symbol, String]
   # @return [Object, NilClass]
   def _objectified_constant_lookup(konst)
-    if(konst.to_s[0].match(/[A-Z]/) && ::Object.const_defined?(konst))
+    if (konst.to_s[0].match(/[A-Z]/) && ::Object.const_defined?(konst))
       ::Object.const_get(konst)
     end
   end
@@ -622,7 +649,7 @@ class AttributeStruct < BasicObject
   #
   # @return [TrueClass]
   def _kernelify
-    unless(kernelified?)
+    unless (kernelified?)
       @_kernelified = true
       (::Kernel.public_instance_methods + ::Kernel.private_instance_methods).each do |m_name|
         self.instance_eval("def #{m_name}(*a, &b); ::Kernel.instance_method(:#{m_name}).bind(self).curry.call(*a, &b); end")
@@ -630,6 +657,7 @@ class AttributeStruct < BasicObject
     end
     true
   end
+
   alias_method :kernelify!, :_kernelify
 
   # @return [TrueClass, FalseClass] Kernel methods have been injected
@@ -643,28 +671,29 @@ class AttributeStruct < BasicObject
   end
 
   # @return [AttributeStruct] clone of current instance
-  def _clone(_new_parent=nil)
+  def _clone(_new_parent = nil)
     _cloned_inst = _klass_new
     _cloned_inst._data.replace __hashish[
-      @table.map{ |_key, _value|
-        if(_key.is_a?(::AttributeStruct))
-          _key = _key._clone
-        else
-          _key = _do_dup(_key)
-        end
-        if(_value.is_a?(::AttributeStruct))
-          _value = _value._clone
-        else
-          _value = _do_dup(_value)
-        end
-        [_key, _value]
-      }
-    ]
+                                 @table.map { |_key, _value|
+                                   if (_key.is_a?(::AttributeStruct))
+                                     _key = _key._clone
+                                   else
+                                     _key = _do_dup(_key)
+                                   end
+                                   if (_value.is_a?(::AttributeStruct))
+                                     _value = _value._clone
+                                   else
+                                     _value = _do_dup(_value)
+                                   end
+                                   [_key, _value]
+                                 }
+                               ]
     _cloned_inst._parent(_new_parent) if _new_parent
     _cloned_inst
   end
+
   alias_method :clone!, :_clone
 end
 
-require 'attribute_struct/attribute_hash'
-require 'attribute_struct/version'
+require "attribute_struct/attribute_hash"
+require "attribute_struct/version"
