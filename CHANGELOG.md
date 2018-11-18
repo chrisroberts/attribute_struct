@@ -1,3 +1,6 @@
+# v0.4.4
+* Add `#key?` method to check for key existence
+
 # v0.4.2
 * Set cloned data via #_data on new instance
 
