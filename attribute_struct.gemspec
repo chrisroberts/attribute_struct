@@ -12,8 +12,7 @@ Gem::Specification.new do |s|
   s.require_path = "lib"
   s.add_runtime_dependency "bogo", ">= 0.1.31", "< 0.3.0"
   s.add_development_dependency "rspec", "~> 3.5"
-  s.add_development_dependency "rake", "~> 10"
-  s.add_development_dependency "rufo", "~> 0.3.0"
+  s.add_development_dependency "rake", "~> 13"
   s.add_development_dependency "minitest"
   s.files = Dir["lib/**/*"] + %w(attribute_struct.gemspec README.md CHANGELOG.md CONTRIBUTING.md LICENSE)
 end
