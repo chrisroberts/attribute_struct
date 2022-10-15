@@ -1,9 +1,8 @@
-require "attribute_struct"
+require "attribute_struct/attribute_hash"
+require "attribute_struct/augmented"
+require "attribute_struct/monkey_camels"
 
 class AttributeStruct < BasicObject
-  autoload :Augmented, "attribute_struct/augmented"
-  autoload :Mash, "attribute_struct/attribute_hash"
-
   class << self
 
     # @return [Hash] valid styles and mapped value
@@ -56,7 +55,7 @@ class AttributeStruct < BasicObject
 
     # Loads helpers for camel casing
     def load_the_camels
-      unless (@camels_loaded)
+      unless defined?(@camels_loaded)
         require "attribute_struct/monkey_camels"
         @camels_loaded = true
       end
@@ -105,7 +104,10 @@ class AttributeStruct < BasicObject
   # @yield block to execute within struct context
   def initialize(init_hash = nil, &block)
     @_camel_keys = _klass.camel_keys
+    @_camel_keys_set = nil
+    @_parent = nil
     @_arg_state = __hashish.new
+    @_kernelified = false
     @_objectified = false
     @table = __hashish.new
     if (init_hash)
@@ -516,7 +518,7 @@ class AttributeStruct < BasicObject
   # @return [String, Symbol]
   def _process_key(key, *args)
     if (key.is_a?(::String) || key.is_a?(::Symbol))
-      key = ::CamelString.new(key.to_s)
+      key = CamelString.new(key.to_s)
       if (_camel_keys && _camel_keys_action && !key._hump_format_requested?)
         case _camel_keys_action
         when :auto_disable

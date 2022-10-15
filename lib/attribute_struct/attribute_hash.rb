@@ -1,5 +1,3 @@
-require "attribute_struct"
-
 class AttributeStruct
 
   # Copyright (c) 2009 Dan Kubb

@@ -28,38 +28,38 @@ describe AttributeStruct do
       end
 
       it "allows method based access" do
-        @struct.method.based["access"].must_equal 100
-        @struct_hash["method"]["based"]["access"].must_equal 100
+        value(@struct.method.based["access"]).must_equal 100
+        value(@struct_hash["method"]["based"]["access"]).must_equal 100
       end
 
       it "allows method and parameter based access" do
-        @struct_hash["method"]["and"]["parameter"]["based"]["access"].must_equal 100
+        value(@struct_hash["method"]["and"]["parameter"]["based"]["access"]).must_equal 100
       end
 
       it "allows block based access" do
-        @struct.block.based._dump["access"].must_equal 100
+        value(@struct.block.based._dump["access"]).must_equal 100
       end
 
       it "allows block and parameter based access" do
-        @struct.block.and.parameter.based["access"].must_equal 100
-        @struct.block.and.parameter.based.nested.with.block["access"].must_equal 100
-        @struct_hash["block"]["and"]["parameter"]["based"]["access"].must_equal 100
-        @struct_hash["block"]["and"]["parameter"]["based"]["nested"]["with"]["block"]["access"].must_equal 100
+        value(@struct.block.and.parameter.based["access"]).must_equal 100
+        value(@struct.block.and.parameter.based.nested.with.block["access"]).must_equal 100
+        value(@struct_hash["block"]["and"]["parameter"]["based"]["access"]).must_equal 100
+        value(@struct_hash["block"]["and"]["parameter"]["based"]["nested"]["with"]["block"]["access"]).must_equal 100
       end
 
       it "allows block only access" do
-        @struct.block_only["access"].must_equal 100
-        @struct_hash["block_only"]["access"].must_equal 100
+        value(@struct.block_only["access"]).must_equal 100
+        value(@struct_hash["block_only"]["access"]).must_equal 100
       end
 
       it "allows hash style access" do
-        @struct["method"][:based]["access"].must_equal 100
-        @struct_hash["method"]["based"]["access"].must_equal 100
+        value(@struct["method"][:based]["access"]).must_equal 100
+        value(@struct_hash["method"]["based"]["access"]).must_equal 100
       end
 
       it "allows _set for invalid method names" do
-        @struct["1"]["value"].must_equal 100
-        @struct_hash["1"]["value"].must_equal 100
+        value(@struct["1"]["value"]).must_equal 100
+        value(@struct_hash["1"]["value"]).must_equal 100
       end
     end
 
@@ -76,10 +76,10 @@ describe AttributeStruct do
       end
 
       it "creates struct with block content" do
-        @struct["enable"].must_equal true
-        @struct.access["user"].must_equal true
-        @struct.access["port"].must_equal 80
-        @struct.access["transport"].must_equal :udp
+        value(@struct["enable"]).must_equal true
+        value(@struct.access["user"]).must_equal true
+        value(@struct.access["port"]).must_equal 80
+        value(@struct.access["transport"]).must_equal :udp
       end
 
       it "should have access to parent data" do
@@ -89,7 +89,7 @@ describe AttributeStruct do
           end
         end
         result = @struct._dump.to_smash
-        result.get(:parent_access, :nest1, :nest2, :nest3, :value).must_equal "nest1"
+        value(result.get(:parent_access, :nest1, :nest2, :nest3, :value)).must_equal "nest1"
       end
     end
 
@@ -101,7 +101,7 @@ describe AttributeStruct do
       end
 
       it "should generate single path Hash" do
-        @struct._dump.must_equal(
+        value(@struct._dump).must_equal(
           "x" => {
             "y" => {
               "z" => true,
@@ -112,17 +112,16 @@ describe AttributeStruct do
       end
     end
 
+    # NOTE: these fail with #value style
     describe "nil behavior" do
-      before do
-        @struct = AttributeStruct.new
-      end
+      let(:struct) { AttributeStruct.new }
 
       it "should return as nil" do
-        @struct.nil?.must_equal true
+        value(struct.nil?).must_equal true
       end
 
       it "should not equal nil" do
-        @struct.wont_be nil
+        struct.wont_be_nil
       end
     end
 
@@ -139,11 +138,11 @@ describe AttributeStruct do
       end
 
       it "should contain an array at my_array" do
-        @struct._dump["my_array"].must_be_kind_of Array
+        value(@struct._dump["my_array"]).must_be_kind_of Array
       end
 
       it "should contain symbol in array" do
-        @struct._dump["my_array"].must_include :item
+        value(@struct._dump["my_array"]).must_include :item
       end
 
       it "should contain an AttrubuteStruct instance in array" do
@@ -151,7 +150,7 @@ describe AttributeStruct do
       end
 
       it "should contain working attribute in array struct" do
-        @struct["my_array"].detect { |i| i.is_a?(AttributeStruct) }.working.must_equal true
+        value(@struct["my_array"].detect { |i| i.is_a?(AttributeStruct) }.working).must_equal true
       end
     end
 
@@ -165,15 +164,15 @@ describe AttributeStruct do
       end
 
       it "should contain value1" do
-        @struct._dump["value1"].must_equal true
+        value(@struct._dump["value1"]).must_equal true
       end
 
       it "should not contain value2 in keys" do
-        @struct._keys.wont_include "value2"
+        value(@struct._keys).wont_include "value2"
       end
 
       it "should report nil for value2" do
-        @struct["value2"].must_be_nil
+        value(@struct["value2"]).must_be_nil
       end
     end
 
@@ -191,16 +190,16 @@ describe AttributeStruct do
       end
 
       it "should dump to a hash type value" do
-        @struct._dump.must_be_kind_of Hash
+        value(@struct._dump).must_be_kind_of Hash
       end
 
       it "should include all defined values" do
         dump = @struct._dump
-        dump["value1"].must_equal true
-        dump["value2"].must_be_kind_of Hash
-        dump["value2"]["nested"].must_equal true
-        dump["value3"].must_be_nil
-        dump["value4"].must_be_nil
+        value(dump["value1"]).must_equal true
+        value(dump["value2"]).must_be_kind_of Hash
+        value(dump["value2"]["nested"]).must_equal true
+        value(dump["value3"]).must_be_nil
+        value(dump["value4"]).must_be_nil
       end
     end
 
@@ -211,8 +210,8 @@ describe AttributeStruct do
       end
 
       it "should include all values defined in hash" do
-        @struct._dump["value1"].must_equal true
-        @struct._dump["value2"]["nested"].must_equal true
+        value(@struct._dump["value1"]).must_equal true
+        value(@struct._dump["value2"]["nested"]).must_equal true
       end
     end
 
@@ -224,13 +223,13 @@ describe AttributeStruct do
       it "should convert into struct when state is set" do
         @struct._set_state(:hash_load_struct => true)
         @struct.value({:a => 1, :b => 2, :c => {:x => 3}})
-        @struct._dump["value"]["c"]["x"].must_equal 3
+        value(@struct._dump["value"]["c"]["x"]).must_equal 3
       end
 
       it "should not convert into struct when state is unset" do
         @struct._set_state(:hash_load_struct => false)
         @struct.value({:a => 1, :b => 2, :c => {:x => 3}})
-        @struct._dump["value"].must_be_kind_of Hash
+        value(@struct._dump["value"]).must_be_kind_of Hash
       end
     end
 
@@ -255,7 +254,7 @@ describe AttributeStruct do
       end
 
       it "should contain all values" do
-        @struct._dump["fubar"]["feebar"]["things"].keys.sort.must_equal ["ohai", "other", "stuff", "testings"]
+        value(@struct._dump["fubar"]["feebar"]["things"].keys.sort).must_equal ["ohai", "other", "stuff", "testings"]
       end
     end
 
@@ -269,7 +268,7 @@ describe AttributeStruct do
             foobar true
           end
         end._dump
-        result.keys.must_include({"feebar" => true})
+        value(result.keys).must_include({"feebar" => true})
       end
 
       it "should allow using Array as keys" do
@@ -278,7 +277,7 @@ describe AttributeStruct do
             fubar true
           end
         end._dump
-        result.keys.must_include [1, 2, 3]
+        value(result.keys).must_include [1, 2, 3]
       end
     end
 
@@ -297,7 +296,7 @@ describe AttributeStruct do
 
       it "should clone a new instance" do
         cloned = @struct._clone
-        cloned.hash.wont_equal @struct.hash
+        value(cloned.hash).wont_equal @struct.hash
       end
 
       it "should not change values in original instance" do
@@ -305,10 +304,11 @@ describe AttributeStruct do
         cloned.value1 10
         inst_hash = @struct._dump
         cloned_hash = cloned._dump
-        inst_hash.to_smash.get(:fubar, :value1).must_equal 1
-        cloned_hash.to_smash.get(:value1).must_equal 10
+        value(inst_hash.to_smash.get(:fubar, :value1)).must_equal 1
+        value(cloned_hash.to_smash.get(:value1)).must_equal 10
       end
 
+      # NOTE: #value style fails here
       it "should have the same parent" do
         cloned = @struct.fubar._clone
         cloned._parent.must_equal @struct._parent
@@ -319,10 +319,10 @@ describe AttributeStruct do
         cloned.value1 10
         inst_hash = @struct._dump
         cloned_hash = cloned._dump
-        inst_hash.to_smash.get(:fubar, :value1).must_equal 1
-        cloned_hash.to_smash.get(:value1).must_equal 10
+        value(inst_hash.to_smash.get(:fubar, :value1)).must_equal 1
+        value(cloned_hash.to_smash.get(:value1)).must_equal 10
         cloned_parent_hash = cloned._parent._dump
-        cloned_parent_hash.to_smash.get(:value1).must_equal 1
+        value(cloned_parent_hash.to_smash.get(:value1)).must_equal 1
       end
 
       it "should allow defining a new parent" do
@@ -330,15 +330,15 @@ describe AttributeStruct do
           new_struct true
         end
         cloned = @struct.fubar._clone(new_struct)
-        cloned._parent._dump.to_smash.get(:new_struct).must_equal true
+        value(cloned._parent._dump.to_smash.get(:new_struct)).must_equal true
       end
 
       it "should contain values of cloned struct" do
         cloned = @struct.fubar._clone
         inst_hash = @struct._dump
         cloned_hash = cloned._dump
-        inst_hash.to_smash.get(:fubar, :value1).must_equal 1
-        cloned_hash.to_smash.get(:value1).must_equal 1
+        value(inst_hash.to_smash.get(:fubar, :value1)).must_equal 1
+        value(cloned_hash.to_smash.get(:value1)).must_equal 1
       end
     end
   end

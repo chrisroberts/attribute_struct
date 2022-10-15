@@ -12,7 +12,7 @@ describe AttributeStruct do
         end
 
         it "should return last set value" do
-          @dump["direct"]["assignment"].must_equal 2
+          value(@dump["direct"]["assignment"]).must_equal 2
         end
       end
 
@@ -26,7 +26,7 @@ describe AttributeStruct do
         end
 
         it "should return both assigned values as an array" do
-          @dump["direct"]["assignment"].must_equal [1, 2]
+          value(@dump["direct"]["assignment"]).must_equal [1, 2]
         end
       end
     end
@@ -45,7 +45,7 @@ describe AttributeStruct do
         end
 
         it "should return last set value" do
-          @dump["direct"]["assignment"].must_equal false
+          value(@dump["direct"]["assignment"]).must_equal false
         end
       end
 
@@ -63,7 +63,7 @@ describe AttributeStruct do
         end
 
         it "should return both assigned values as an array" do
-          @dump["direct"]["assignment"].must_equal [true, false]
+          value(@dump["direct"]["assignment"]).must_equal [true, false]
         end
       end
     end

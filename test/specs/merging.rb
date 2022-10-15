@@ -23,15 +23,15 @@ describe AttributeStruct do
       end
 
       it "should have correct value for value1" do
-        @struct["value1"].must_equal true
+        value(@struct["value1"]).must_equal true
       end
 
       it "should have correct value for squashing" do
-        @struct["value2"]["squashing"].must_equal true
+        value(@struct["value2"]["squashing"]).must_equal true
       end
 
       it "should have correct value for nesting" do
-        @struct["value2"]["nesting"].must_equal false
+        value(@struct["value2"]["nesting"]).must_equal false
       end
     end
 
@@ -45,11 +45,11 @@ describe AttributeStruct do
       end
 
       it "should contain test_value" do
-        @struct["test_value"].must_equal true
+        value(@struct["test_value"]).must_equal true
       end
 
       it "should contain value1" do
-        @struct["value1"].must_equal true
+        value(@struct["value1"]).must_equal true
       end
     end
   end

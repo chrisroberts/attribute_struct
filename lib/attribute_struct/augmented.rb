@@ -1,5 +1,3 @@
-require "attribute_struct"
-
 class AttributeStruct
   # AttributeStruct expanded class that include the Kernel module
   # and automatically objectifies the instance

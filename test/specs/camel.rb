@@ -16,13 +16,13 @@ describe AttributeStruct do
     end
 
     it "should camel case keys when dumped" do
-      @struct._dump.keys.must_include "ValueOne"
-      @struct._dump.keys.must_include "ValueTwo"
+      value(@struct._dump.keys).must_include "ValueOne"
+      value(@struct._dump.keys).must_include "ValueTwo"
     end
 
     it "should allow explicit disable on keys" do
       @struct._set("not_camel"._no_hump, true)
-      @struct._dump.keys.must_include "not_camel"
+      value(@struct._dump.keys).must_include "not_camel"
     end
 
     it "should allow implicit disable on nested structs" do
@@ -34,10 +34,10 @@ describe AttributeStruct do
         end
       end
       dump = @struct._dump
-      dump["DisableCamel"][:not_camel].must_equal true
-      dump["DisableCamel"][:not_camel_nest][:no_camel_here].must_equal true
-      dump["ValueOne"].must_equal true
-      dump["ValueTwo"]["Nesting"].must_equal true
+      value(dump["DisableCamel"][:not_camel]).must_equal true
+      value(dump["DisableCamel"][:not_camel_nest][:no_camel_here]).must_equal true
+      value(dump["ValueOne"]).must_equal true
+      value(dump["ValueTwo"]["Nesting"]).must_equal true
     end
   end
 
@@ -48,8 +48,8 @@ describe AttributeStruct do
       @struct.value_one true
       @struct.value_two { nesting true }
       dump = @struct._dump
-      dump["ValueOne"].must_equal true
-      dump["ValueTwo"].must_equal "Nesting" => true
+      value(dump["ValueOne"]).must_equal true
+      value(dump["ValueTwo"]).must_equal "Nesting" => true
     end
 
     it "should allow defaulting to lead lowercase" do
@@ -59,8 +59,8 @@ describe AttributeStruct do
       @struct.value_one true
       @struct.value_two { nesting true }
       dump = @struct._dump
-      dump["valueOne"].must_equal true
-      dump["valueTwo"].must_equal "nesting" => true
+      value(dump["valueOne"]).must_equal true
+      value(dump["valueTwo"]).must_equal "nesting" => true
     end
 
     it "should allow mixing styles" do
@@ -73,9 +73,9 @@ describe AttributeStruct do
       x._camel_style = :leading_hump
       x.inside_nesting true
       dump = @struct._dump
-      dump["valueOne"].must_equal true
-      dump["valueTwo"].must_equal "nesting" => true
-      dump["valueThree"].must_equal "InsideNesting" => true
+      value(dump["valueOne"]).must_equal true
+      value(dump["valueTwo"]).must_equal "nesting" => true
+      value(dump["valueThree"]).must_equal "InsideNesting" => true
     end
 
     it "should allow key level overrides" do
@@ -88,9 +88,9 @@ describe AttributeStruct do
       x._camel_style = :leading_hump
       x.set!("inside_nesting".no_leading_hump!).value true
       dump = @struct._dump
-      dump["valueOne"].must_equal true
-      dump["valueTwo"]["Nesting"].must_equal "value" => true
-      dump["valueThree"]["insideNesting"].must_equal "Value" => true
+      value(dump["valueOne"]).must_equal true
+      value(dump["valueTwo"]["Nesting"]).must_equal "value" => true
+      value(dump["valueThree"]["insideNesting"]).must_equal "Value" => true
     end
   end
 
@@ -126,15 +126,15 @@ describe AttributeStruct do
       @struct.fubar.foo_dar.snake_case.new_snake "snake!"
       @struct.fubar.foo_dar.snake_case.still_snake.now_camel.new_camel "a camel!"
       hash = @struct._dump
-      hash["Fubar"]["NewBar"]["Halt"].must_equal "new_value"
-      hash["Fubar"]["FooDar"]["snake_case"]["new_snake"].must_equal "snake!"
-      hash["Fubar"]["FooDar"]["snake_case"]["still_snake"]["NowCamel"]["NewCamel"].must_equal "a camel!"
+      value(hash["Fubar"]["NewBar"]["Halt"]).must_equal "new_value"
+      value(hash["Fubar"]["FooDar"]["snake_case"]["new_snake"]).must_equal "snake!"
+      value(hash["Fubar"]["FooDar"]["snake_case"]["still_snake"]["NowCamel"]["NewCamel"]).must_equal "a camel!"
     end
   end
 
   it "should not camel case when forced if struct has camel casing disabled" do
     struct = AttributeStruct.new
     struct._camel_keys = false
-    struct._process_key("my_key", :force).must_equal "my_key"
+    value(struct._process_key("my_key", :force)).must_equal "my_key"
   end
 end

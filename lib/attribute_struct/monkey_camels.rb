@@ -1,6 +1,4 @@
-require "attribute_struct"
-
-unless (defined?(MonkeyCamels))
+class AttributeStruct
   module MonkeyCamels
     class << self
       def included(klass)
@@ -36,15 +34,22 @@ unless (defined?(MonkeyCamels))
     end
 
     module Humps
-
       # @return [TrueClass, FalseClass] specific style requested
       def _hump_format_requested?
-        @__not_camel != nil
+        if defined?(@__not_camel)
+          @__not_camel != nil
+        else
+          false
+        end
       end
 
       # @return [TrueClass, FalseClass] camelized
       def _camel?
-        !@__not_camel
+        if defined?(@__not_camel)
+          !@__not_camel
+        else
+          true
+        end
       end
 
       # @return [self] disable camelizing
@@ -65,7 +70,9 @@ unless (defined?(MonkeyCamels))
 
       # @return [Symbol, NilClass] style of hump
       def _hump_style
-        @__hump_style
+        if defined?(@__hump_style)
+          @__hump_style
+        end
       end
 
       alias_method :hump_style!, :_hump_style
@@ -97,16 +104,18 @@ unless (defined?(MonkeyCamels))
   end
 
   # Force some monkeys around
-  String.send(:include, MonkeyCamels)
-  Symbol.send(:include, MonkeyCamels)
+  ::String.send(:include, MonkeyCamels)
+  ::Symbol.send(:include, MonkeyCamels)
 
   # Specialized String type
-  class CamelString < String
+  class CamelString < ::String
     def initialize(val = nil)
       super
       if (val.respond_to?(:_camel?))
         _no_hump unless val._camel?
         @__hump_style = val._hump_style
+      else
+        @__hump_style = nil
       end
     end
   end
