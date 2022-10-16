@@ -1,3 +1,6 @@
+# v0.5.0
+* Clean up loading and nest constants
+
 # v0.4.4
 * Add `#key?` method to check for key existence
 
