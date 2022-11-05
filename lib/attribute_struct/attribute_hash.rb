@@ -1,3 +1,5 @@
+require "attribute_struct/base"
+
 class AttributeStruct
 
   # Copyright (c) 2009 Dan Kubb

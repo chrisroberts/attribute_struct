@@ -1,5 +1,7 @@
+require "attribute_struct/base"
+
 # Helper methods for IRB interactions
-module AttributeStruct
+class AttributeStruct
   module IrbCompat
 
     # @return [String] object inspection

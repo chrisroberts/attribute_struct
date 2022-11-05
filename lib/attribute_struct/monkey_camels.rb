@@ -1,3 +1,5 @@
+require "attribute_struct/base"
+
 class AttributeStruct
   module MonkeyCamels
     class << self

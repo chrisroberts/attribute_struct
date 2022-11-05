@@ -1,8 +1,10 @@
+require "attribute_struct/base"
+
 require "attribute_struct/attribute_hash"
 require "attribute_struct/augmented"
 require "attribute_struct/monkey_camels"
 
-class AttributeStruct < BasicObject
+class AttributeStruct
   class << self
 
     # @return [Hash] valid styles and mapped value
