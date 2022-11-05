@@ -1,4 +1,5 @@
-# UNRELEASED
+# v0.5.1
+* Update loading strategy to prevent type mismatches
 
 # v0.5.0
 * Clean up loading and nest constants
