@@ -37,6 +37,39 @@ describe AttributeStruct do
     end
   end
 
+  describe ".validate_camel_styles" do
+    it "does not error on supported type" do
+      expect {
+        described_class.validate_camel_style(:leading)
+      }.not_to raise_error
+    end
+
+    it "raises error on unsupported type" do
+      expect {
+        described_class.validate_camel_style(:unknown)
+      }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe ".hashish" do
+    it "should return specialized hash class" do
+      expect(described_class.hashish).to be_a(Class)
+      expect(described_class.hashish.ancestors).to include(Hash)
+    end
+  end
+
+  describe ".build" do
+    it "raises error if block not provided" do
+      expect {
+        described_class.build
+      }.to raise_error(ArgumentError)
+    end
+
+    it "evaluates block and dumps value" do
+      expect(described_class.build {}).to be_a(Hash)
+    end
+  end
+
   describe "#key?" do
     let(:struct) {
       AttributeStruct.new { fubar true }

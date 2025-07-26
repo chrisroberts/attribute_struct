@@ -520,7 +520,7 @@ class AttributeStruct
   # @return [String, Symbol]
   def _process_key(key, *args)
     if (key.is_a?(::String) || key.is_a?(::Symbol))
-      key = CamelString.new(key.to_s)
+      key = CamelString.new(key.to_s) unless key.is_a?(CamelString)
       if (_camel_keys && _camel_keys_action && !key._hump_format_requested?)
         case _camel_keys_action
         when :auto_disable
