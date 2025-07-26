@@ -1,4 +1,5 @@
 # UNRELEASED
+* Behave correctly with frozen strings
 
 # v0.5.1
 * Update loading strategy to prevent type mismatches
