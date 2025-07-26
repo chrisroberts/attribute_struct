@@ -56,16 +56,14 @@ class AttributeStruct
 
       # @return [self] disable camelizing
       def _no_hump
-        @__not_camel = true
-        self
+        CamelString.new(self)._no_hump
       end
 
       alias_method :disable_camel!, :_no_hump
 
       # @return [self] enable camelizing
       def _hump
-        @__not_camel = false
-        self
+        CamelString.new(self)._hump
       end
 
       alias_method :camel!, :_hump
@@ -81,11 +79,9 @@ class AttributeStruct
 
       # Set hump style to non-leading upcase
       #
-      # @return [self]
+      # @return [CamelString]
       def _bactrian
-        @__not_camel = false
-        @__hump_style = :no_leading_hump
-        self
+        CamelString.new(self)._bactrian
       end
 
       alias_method :bactrian!, :_bactrian
@@ -93,11 +89,9 @@ class AttributeStruct
 
       # Set hump style to leading upcase
       #
-      # @return [self]
+      # @return [CamelString]
       def _dromedary
-        @__not_camel = false
-        @__hump_style = :leading_hump
-        self
+        CamelString.new(self)._dromedary
       end
 
       alias_method :dromedary!, :_dromedary
@@ -120,5 +114,42 @@ class AttributeStruct
         @__hump_style = nil
       end
     end
+
+    # Set hump style to non-leading upcase
+    #
+    # @return [self]
+    def _bactrian
+      @__not_camel = false
+      @__hump_style = :no_leading_hump
+      self
+    end
+    alias_method :bactrian!, :_bactrian
+    alias_method :no_leading_hump!, :_bactrian
+
+    # Set hump style to leading upcase
+    #
+    # @return [self]
+    def _dromedary
+      @__not_camel = false
+      @__hump_style = :leading_hump
+
+      self
+    end
+    alias_method :dromedary!, :_dromedary
+    alias_method :leading_hump!, :_dromedary
+
+    # @return [self] disable camelizing
+    def _no_hump
+      @__not_camel = true
+      self
+    end
+    alias_method :disable_camel!, :_no_hump
+
+    # @return [self] enable camelizing
+    def _hump
+      @__not_camel = false
+      self
+    end
+    alias_method :camel!, :_hump
   end
 end
